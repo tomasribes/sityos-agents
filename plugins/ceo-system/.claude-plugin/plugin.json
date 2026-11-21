@@ -1,0 +1,10 @@
+{
+  "name": "ceo-system",
+  "version": "0.1.0",
+  "description": "CEO agent and execution team on top of Linear and GitHub: goals -> issues -> reviewable PRs",
+  "author": {
+    "name": "Tomas Ribes"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["linear", "agents", "planning", "ceo"]
+}

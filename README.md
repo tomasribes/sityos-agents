@@ -90,3 +90,68 @@ sí se versiona (el patrón `/.claude/` solo aplica a la raíz).
 # Editar agents/<nombre>/SKILL.md — al ser symlink no hace falta reinstalar.
 # Para un agente nuevo: crear agents/<nombre>/SKILL.md y volver a ejecutar el script.
 ```
+
+## Plugin `ceo-system` (Sistema CEO-Agente)
+
+Este repo es también un **marketplace de plugins** de Claude Code. El plugin
+`ceo-system` convierte el `goals.md` de cada repo en issues de Linear y,
+en fases posteriores, en PRs revisables. Convive con las skills `sityos-*`:
+el script de instalación no se ve afectado.
+
+```
+.claude-plugin/marketplace.json        ← marketplace "sityos-agents"
+plugins/ceo-system/
+├── .claude-plugin/plugin.json
+├── agents/
+│   ├── ceo.md                         → ceo-system:ceo  (planifica, sin escritura)
+│   └── pm.md                          → ceo-system:pm   (digest diario, solo lectura)
+├── commands/
+│   ├── ceo-run.md                     → /ceo-system:ceo-run
+│   └── pm-digest.md                   → /ceo-system:pm-digest
+├── skills/
+│   ├── linear-conventions/SKILL.md    estados, labels, transiciones, contrato de issue
+│   └── pr-contract/SKILL.md           formato y límites de PR
+├── hooks/
+│   ├── hooks.json                     PreToolUse sobre Bash y herramientas de ficheros
+│   └── deny-dangerous.sh              guardarraíl (falla cerrado)
+└── tests/deny-dangerous.test.sh       batería de casos del guardarraíl
+```
+
+### Instalación
+
+```bash
+# Desarrollo local (lee el working tree, los cambios aplican al reiniciar sesión)
+claude plugin marketplace add ~/ai-projects/sityos-agents
+claude plugin install ceo-system@sityos-agents
+
+# Desde GitHub (otras máquinas, GitHub Actions)
+/plugin install ceo-system --marketplace tomasribes/sityos-agents
+```
+
+### Requisitos por repo
+
+Un repo participa en el sistema cuando tiene `goals.md` (escrito por el dueño)
+y `.ceo/config.yml`. Sin ellos, `/ceo-system:ceo-run` crea un único issue en
+`TOM` avisando de lo que falta y no hace nada más.
+
+### Guardarraíl
+
+El hook bloquea (exit 2): push a `master`/`main` y forzados, `git reset --hard`,
+`gh pr merge`, `rm -rf`, drush destructivo (`sql-drop`, `si`), `docker compose down -v`,
+scripts de deploy/provisioning, `doctl`, y lectura de `.env`, claves y
+directorios `secrets/`/`credentials/` (permitidos `.env.example` y similares).
+Se activa en **todas** las sesiones donde el plugin esté habilitado, también
+las interactivas. Antes de cambiarlo:
+
+```bash
+bash plugins/ceo-system/tests/deny-dangerous.test.sh   # exit 0 = todo verde
+claude plugin validate --strict .
+```
+
+### Kill-switches
+
+| Ámbito | Cómo |
+|---|---|
+| Proyecto | Project label `agent-paused` en Linear |
+| Issue | Issue label `agent-paused` |
+| Repo | Fichero `.ceo/PAUSE` |
