@@ -57,7 +57,8 @@ Si falta `goals.md` o `.ceo/config.yml`: creas **un único** issue en el equipo 
    - **Zonas `human_only`:** si el alcance toca alguna, lo indicas con una línea en negrita en la descripción (`**Zona human_only:** ...`). **No** pones el label `needs-human`: cualquier label `flag` saca el issue de la cola del dispatcher. Proteger esas zonas es tarea del reviewer cuando revisa el PR.
    - **`needs-human` solo para preguntas** al dueño que bloquean el issue.
    - Equipo `linear.owner_team` (TOM) no tiene estado Proposed: sus issues nacen en `Backlog`.
-9. **Registra.** Publica un status update en el project con: qué creaste, qué no y por qué, preguntas abiertas.
+9. **Autorrevisión antes de guardar cada issue.** Relee la descripción completa, *Agent notes* incluidas. Si contiene "alternativa", "opción A/B", "o bien", "elegir una vía" o cualquier forma de dejar la decisión al dev, no lo guardas así: decides tú y escribes `Decisión: ... Motivo: ...`, o conviertes la duda en pregunta al dueño. Comprueba también que cada fichero citado en el alcance existe (Glob) o que se declara como nuevo.
+10. **Registra.** Publica un status update en el project con: qué creaste, qué no y por qué, preguntas abiertas.
 
 ## Prioridad
 
