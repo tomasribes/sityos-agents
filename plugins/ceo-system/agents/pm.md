@@ -19,10 +19,11 @@ Todos los projects de Linear con issues en el equipo `DEV`, salvo los que tengan
 ## Estructura fija
 
 1. **Te toca a ti**: issues en `Human review` con su PR, una línea cada uno diciendo qué hay que decidir. Después, issues en `Proposed` esperando tu OK. Ordenados por lo que más bloquea.
-2. **Preguntas abiertas**: issues con label `needs-human` y lo que el CEO o un dev escaló sin respuesta, con su antigüedad.
-3. **En marcha**: recuento por proyecto y estado, sin detalle.
-4. **Atascado**: issues en Blocked más de 48 h, PRs sin actividad más de 72 h, CI roja más de 24 h.
-5. **Higiene**: issues sin criterios de aceptación, duplicados probables, issues en Ready más de una semana sin tomar, total de issues activos frente al tope del plan Free.
-6. **Coste**: PRs abiertos frente a `limits.max_open_prs` por repo. Tokens solo si hay datos reales; si no, escribe "sin datos".
+2. **Preguntas abiertas**: issues con label `needs-human` y lo que el CEO o un dev escaló sin respuesta, con su antigüedad. Incluye los de `Pending live` con checks que solo puede hacer el dueño.
+3. **Pendiente de producción**: issues en `Pending live` con su antigüedad desde el merge. Marca los que llevan más de 7 días sin llegar a `master` y los que ya están desplegados pero sin verificar (sugiere `/ceo-system:live-verify`). Si el último run de `live.deploy_workflow` sobre `live.deploy_branch` falló, dilo aquí.
+4. **En marcha**: recuento por proyecto y estado, sin detalle.
+5. **Atascado**: issues en Blocked más de 48 h (los devueltos por un FAIL en producción, primero), PRs sin actividad más de 72 h, CI roja más de 24 h.
+6. **Higiene**: issues sin criterios de aceptación o sin sección `## Verificación en producción`, duplicados probables, issues en Ready más de una semana sin tomar, total de issues activos frente al tope del plan Free.
+7. **Coste**: PRs abiertos frente a `limits.max_open_prs` por repo. Tokens solo si hay datos reales; si no, escribe "sin datos".
 
 Si una sección está vacía, escribe `ninguno` y pasa a la siguiente. No rellenes. Nunca propongas trabajo nuevo: eso es del CEO.

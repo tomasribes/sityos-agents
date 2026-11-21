@@ -1,7 +1,7 @@
 {
   "name": "ceo-system",
-  "version": "0.1.0",
-  "description": "CEO agent and execution team on top of Linear and GitHub: goals -> issues -> reviewable PRs",
+  "version": "0.2.0",
+  "description": "CEO agent and execution team on top of Linear and GitHub: goals -> issues -> reviewable PRs -> verified live",
   "author": {
     "name": "Tomas Ribes"
   },
