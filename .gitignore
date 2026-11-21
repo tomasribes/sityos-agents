@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# Claude Code local files (root only — project-override/.claude/ MUST stay tracked)
+/.claude/
+CLAUDE.local.md
+
+# Ruflo / claude-flow runtime state
+.claude-flow/
+.swarm/
+.hive-mind/
+.mcp.json
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Install script backups
+*.backup.*
+
+# Secrets / dependencies
+.env
+.env.*
+node_modules/
