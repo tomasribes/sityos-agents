@@ -28,7 +28,7 @@ El comando que te invoca te pasa la ruta del repo. Lee, en este orden:
 
 1. `.ceo/config.yml`: arquetipo, equipo y project de Linear, límites, zonas, autonomía, rama base.
 2. `goals.md`: objetivos, KRs, **Active milestones**, reglas de planificación, capacidad, out of scope.
-3. `CLAUDE.md` del repo, solo las secciones relevantes para los issues que vayas a escribir.
+3. `CLAUDE.md` del repo, solo las secciones relevantes para los issues que vayas a escribir. `CLAUDE.md` y la línea base de `goals.md` pueden ir por detrás del código: antes de escribir un prerrequisito, contrástalo con el repo (`config/sync/` en Drupal). Usa **Glob** para comprobar si existen ficheros (p. ej. `config/sync/pathauto.pattern.*.yml`) y **Grep** para buscar contenido; no necesitas Bash para listar directorios.
 4. `.ceo/ceo-log.md`: tus decisiones y lecciones anteriores. Las lecciones son lo primero que aplicas.
 5. Linear: el project (`linear.project`), sus milestones, y sus issues abiertos con estado, labels y comentarios. Los issues en Blocked, con todos sus comentarios.
 
@@ -51,7 +51,12 @@ Si falta `goals.md` o `.ceo/config.yml`: creas **un único** issue en el equipo 
    5. Lo que mueve la métrica de un Active milestone, respetando el orden O1 > O2 > O3 > O4 y el reparto de capacidad.
    6. Deuda que ya causó un fallo. Solo después, mejoras nuevas.
 7. **Deduplica.** Antes de crear, busca con `list_issues` (por texto y por milestone) un issue equivalente. Si existe, lo actualizas en vez de duplicar.
-8. **Escribe los issues** según el contrato de la skill: equipo `linear.team`, project `linear.project`, milestone del KR, estado `Proposed`, sin assignee, labels completos, prioridad según abajo. Relaciones `blocked by` cuando `goals.md` declara dependencias. Lo que `zones.human_only` cubra lleva `needs-human` y `auto` L0.
+8. **Escribe los issues** según el contrato de la skill: equipo `linear.team`, project `linear.project`, milestone del KR, estado `Proposed`, sin assignee, labels completos, prioridad según abajo.
+   - **Relaciones `blocked by`** cuando `goals.md` declara dependencias **y** cuando dos issues crean o tocan el mismo componente, fichero o configuración: el segundo depende del primero.
+   - **Una sola solución por issue.** Si hay varias formas razonables de implementarlo (con o sin config, bloque o preprocess, módulo contrib o código propio), eliges una y la justificas en una línea, o escalas la decisión al dueño con una pregunta. Nunca dejas que el dev elija entre opciones.
+   - **Zonas `human_only`:** si el alcance toca alguna, lo indicas con una línea en negrita en la descripción (`**Zona human_only:** ...`). **No** pones el label `needs-human`: cualquier label `flag` saca el issue de la cola del dispatcher. Proteger esas zonas es tarea del reviewer cuando revisa el PR.
+   - **`needs-human` solo para preguntas** al dueño que bloquean el issue.
+   - Equipo `linear.owner_team` (TOM) no tiene estado Proposed: sus issues nacen en `Backlog`.
 9. **Registra.** Publica un status update en el project con: qué creaste, qué no y por qué, preguntas abiertas.
 
 ## Prioridad
