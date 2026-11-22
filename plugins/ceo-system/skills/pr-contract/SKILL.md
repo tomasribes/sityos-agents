@@ -14,6 +14,7 @@ One issue = one branch = one PR. If the work does not fit a PR the owner reviews
 DEV-123 · <issue title>
 
 Fixes DEV-123
+<!-- Merging moves the issue to Pending live, not Done. Only the verifier closes it after the production deploy. -->
 
 ## Qué hace
 Two sentences.
