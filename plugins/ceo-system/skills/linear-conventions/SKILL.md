@@ -61,6 +61,8 @@ Label names are **unique across the workspace**: apply them by their bare name (
 | `area` | drupal · scss · backend · mcp · infra · data · seo · video · editorial | 1 or 2 (`editorial` = content work) |
 | `flag` | needs-scoping · needs-human · budget-hit · agent-paused | any; any flag removes the issue from the queue |
 
+`needs-human` means "blocked on an owner decision", never "touches a human_only zone". Scope that touches `zones.human_only` is stated in the description (`**Zona human_only:** ...`) and enforced by the reviewer at PR time.
+
 ## Autonomy levels
 
 | Level | Agent may |
