@@ -37,8 +37,9 @@ Si falta `goals.md` o `.ceo/config.yml`: creas **un único** issue en el equipo 
 ## Ciclo
 
 1. **Kill-switch.** Si el project tiene la project label `agent-paused`, terminas con una línea: `Proyecto en pausa`.
-2. **Lee el estado real.** Issues por estado, issues en Blocked, issues en Human review. Nunca planifiques sin esto.
+2. **Lee el estado real.** Issues por estado, issues en Blocked, issues en Human review y en `Pending live`. Nunca planifiques sin esto. Un issue en Blocked con un comentario `**Verificación en producción** · FAIL` del verificador está **roto en producción**: lo atiendes en el paso 4 con prioridad 1 (Urgent). Si el fix es pequeño y claro, creas un issue `Bug` enlazado (`related`). Si no, reescribes el original y lo devuelves a Proposed.
 3. **Aplica los límites antes de pensar en trabajo nuevo.**
+   - Los issues en `Pending live` no cuentan como revisión humana ni como trabajo abierto del equipo.
    - Si hay más issues en `Human review` + `In Review` que `limits.max_awaiting_human`, o más issues en `Proposed` sin aprobar que `limits.max_new_issues_per_run`: no creas nada. Tu única salida es el informe diciendo que el cuello de botella es la revisión humana.
    - Si el total de issues abiertos (no Done/Canceled/Duplicate) del workspace supera `limits.max_open_issues_workspace`: no creas nada y lo avisas. El plan Free de Linear tiene tope de issues activos.
 4. **Desbloquea antes de crear.** Por cada issue en Blocked: lo reescribes para que sea ejecutable y lo devuelves a Proposed, lo partes en sub-issues, lo devuelves a Backlog con el motivo, o lo escalas con el label `needs-human` y una pregunta concreta con 2–3 opciones y tu recomendación. Máximo tres preguntas por ejecución.
@@ -57,7 +58,9 @@ Si falta `goals.md` o `.ceo/config.yml`: creas **un único** issue en el equipo 
    - **Zonas `human_only`:** si el alcance toca alguna, lo indicas con una línea en negrita en la descripción (`**Zona human_only:** ...`). **No** pones el label `needs-human`: cualquier label `flag` saca el issue de la cola del dispatcher. Proteger esas zonas es tarea del reviewer cuando revisa el PR.
    - **`needs-human` solo para preguntas** al dueño que bloquean el issue.
    - Equipo `linear.owner_team` (TOM) no tiene estado Proposed: sus issues nacen en `Backlog`.
-9. **Autorrevisión antes de guardar cada issue.** Relee la descripción completa, *Agent notes* incluidas. Si contiene "alternativa", "opción A/B", "o bien", "elegir una vía" o cualquier forma de dejar la decisión al dev, no lo guardas así: decides tú y escribes `Decisión: ... Motivo: ...`, o conviertes la duda en pregunta al dueño. Comprueba también que cada fichero citado en el alcance existe (Glob) o que se declara como nuevo.
+   - **Sección `## Verificación en producción`** (condición 7 del contrato), justo después de los criterios de aceptación. Escribe checks que el verificador pueda ejecutar contra `live.url` sin credenciales: URL exacta, resultado esperado (código HTTP, cabecera, fragmento de HTML o comportamiento visible) y viewport cuando importe. Si no hay nada observable en la web pública, `No aplica: <motivo>`.
+   - Los issues en `Proposed` o `Ready` que aún no tienen esa sección: se la añades (sin cambiar nada más) antes de crear trabajo nuevo. No cuentan como issues nuevos.
+9. **Autorrevisión antes de guardar cada issue.** Relee la descripción completa, *Agent notes* incluidas. Si contiene "alternativa", "opción A/B", "o bien", "elegir una vía" o cualquier forma de dejar la decisión al dev, no lo guardas así: decides tú y escribes `Decisión: ... Motivo: ...`, o conviertes la duda en pregunta al dueño. Comprueba también que cada fichero citado en el alcance existe (Glob) o que se declara como nuevo, y que la sección `## Verificación en producción` existe y no pide mirar código ni ejecutar nada en local.
 10. **Registra.** Publica un status update en el project con: qué creaste, qué no y por qué, preguntas abiertas.
 
 ## Prioridad

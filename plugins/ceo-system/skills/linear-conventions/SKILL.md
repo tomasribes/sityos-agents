@@ -24,8 +24,9 @@ Linear is the "what"; GitHub is the "how". No agent keeps its own state: if it i
 | In Progress | started | An agent has a branch open |
 | In Review | started | PR open, CI and control agents running |
 | Human review | started | Gates green, the owner must look at the PR |
-| Blocked | started | Agent stopped: missing context or decision |
-| Done | completed | PR merged |
+| Blocked | started | Agent stopped: missing context or decision, or a live check failed |
+| Pending live | started | PR merged to `develop`; waiting for merge to `master`, deploy and live verification |
+| Done | completed | Verified on the live site by the verifier |
 | Canceled / Duplicate | canceled | Discarded |
 
 ## Who moves what (one owner per transition)
@@ -42,10 +43,23 @@ Linear is the "what"; GitHub is the "how". No agent keeps its own state: if it i
 | In Review → Blocked | Tester | A criterion is not verifiable as written |
 | In Review → Human review | Reviewer | No blocking findings |
 | Human review → In Progress | **Owner** | Requests changes |
-| Human review → Done | **Owner** (via GitHub merge) | `Fixes DEV-123` closes it |
+| Human review → Pending live | **Owner** (via GitHub merge) | `Fixes DEV-123` + Linear Git automation "PR merged → Pending live" |
+| Pending live → Done | Verifier | Merge commit deployed by a successful `live.deploy_workflow` run and every live check PASS |
+| Pending live → Blocked | Verifier | A live check FAILS (evidence in a comment) |
 | Blocked → Proposed | CEO | Rewrites or splits it |
 
-Never move an issue along a transition you do not own.
+Never move an issue along a transition you do not own. **Nobody but the verifier moves an issue to Done**: merged is not finished, live is.
+
+## Definition of done: verified live
+
+An issue is finished only when its change works on the public site (`live.url` in `.ceo/config.yml`). Flow:
+
+```
+Human review → merge to develop → Pending live → merge develop→master → artifact build → deploy → verifier → Done
+                                                                                                  └→ Blocked + evidence
+```
+
+The verifier runs with `/ceo-system:live-verify` after each deploy, and automatically at the start of `/ceo-system:ceo-run`. It checks the issue's `## Verificación en producción` section from outside, like a visitor: HTTP with `curl`, visual with Claude in Chrome when connected. Checks it cannot run leave the issue in Pending live with `needs-human` and a checklist for the owner.
 
 ## Label groups (issue labels)
 
@@ -76,7 +90,7 @@ Default level per change category: docs/README/UI translations L2 · new tests L
 
 A new project runs **entirely at L0 for two weeks** (`autonomy.default: L0` in `.ceo/config.yml`). The table is the destination, not the start.
 
-## Issue contract (six conditions)
+## Issue contract (seven conditions)
 
 1. **Title**: imperative, in Spanish, ≤ 80 chars, without the project name.
 2. **Observable result**: one sentence describing what will be true, checkable without reading code.
@@ -84,6 +98,7 @@ A new project runs **entirely at L0 for two weeks** (`autonomy.default: L0` in `
 4. **Closed scope**: expected files/modules, plus a line `Fuera de alcance:` with what must not be touched.
 5. **Labels**: one of role, type, risk, auto, goal; one or two of area.
 6. **Size**: fits a PR the owner reviews in 10 minutes (≤ 400 diff lines) and ≤ 4 h of work.
+7. **Live verification**: a `## Verificación en producción` section with 1–4 checks run against `live.url` from outside (URL + expected status, header, HTML fragment or visible behaviour; viewport when it matters). If nothing is observable on the public site (drafts in `docs/`, internal tooling), write `No aplica: <motivo>`; the verifier then closes the issue once the merge commit is deployed. Never "check the code" or "run locally" here.
 
 Implementation detail goes in a collapsible section at the end of the description:
 
