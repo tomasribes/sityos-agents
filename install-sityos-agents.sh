@@ -66,6 +66,9 @@ else
   # Secrets must come from env vars (${VAR}), never inline.
   register_mcp finanzas-personales \
     "{\"type\":\"stdio\",\"command\":\"npx\",\"args\":[\"tsx\",\"$AI_PROJECTS/finanzas-mcp/src/index.ts\"]}"
+  # Token is inherited from the shell: export DIGITALOCEAN_API_TOKEN in ~/.zshenv.
+  register_mcp digitalocean-mcp \
+    '{"type":"stdio","command":"npx","args":["@digitalocean/mcp","--services","apps,databases"]}'
 fi
 
 # ── 3. Global CLAUDE.md (opt-in) ──────────────────────────────────────
