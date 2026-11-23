@@ -24,7 +24,7 @@ sityos-agents/
 ## Instalación rápida
 
 ```bash
-bash install-sityos-agents.sh                    # skills + MCP de usuario
+bash install-sityos-agents.sh                    # skills + MCP de usuario + attribution.commit="" (sin Co-Authored-By)
 bash install-sityos-agents.sh --project <ruta>   # + override de proyecto
 bash install-sityos-agents.sh --link-claude-md   # + symlink del CLAUDE.md global
 ```
