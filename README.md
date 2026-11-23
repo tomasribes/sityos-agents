@@ -103,10 +103,13 @@ el script de instalación no se ve afectado.
 plugins/ceo-system/
 ├── .claude-plugin/plugin.json
 ├── agents/
-│   ├── ceo.md                         → ceo-system:ceo  (planifica, sin escritura)
-│   └── pm.md                          → ceo-system:pm   (digest diario, solo lectura)
+│   ├── ceo.md                         → ceo-system:ceo       (planifica, sin escritura)
+│   ├── verifier.md                    → ceo-system:verifier  (cierra issues tras verificar en producción)
+│   └── pm.md                          → ceo-system:pm        (digest diario, solo lectura)
 ├── commands/
-│   ├── ceo-run.md                     → /ceo-system:ceo-run
+│   ├── ceo-run.md                     → /ceo-system:ceo-run      (goals.md → issues en Proposed)
+│   ├── dispatch.md                    → /ceo-system:dispatch     (issues Ready → agentes → PRs)
+│   ├── live-verify.md                 → /ceo-system:live-verify  (Pending live → Done/Blocked)
 │   └── pm-digest.md                   → /ceo-system:pm-digest
 ├── skills/
 │   ├── linear-conventions/SKILL.md    estados, labels, transiciones, contrato de issue
@@ -134,6 +137,29 @@ Un repo participa en el sistema cuando tiene `goals.md` (escrito por el dueño)
 y `.ceo/config.yml`. Sin ellos, `/ceo-system:ceo-run` crea un único issue en
 `TOM` avisando de lo que falta y no hace nada más.
 
+### Ciclo de trabajo
+
+```
+/ceo-system:ceo-run    → issues en Proposed
+(dueño)                → Proposed → Ready
+/ceo-system:dispatch   → un agente por issue Ready, en su worktree → PR a develop
+(dueño)                → revisa y fusiona → Pending live → develop → master
+/ceo-system:live-verify→ Done o Blocked
+```
+
+`/ceo-system:dispatch [DEV-19 ...]` lanza en paralelo el agente que `.ceo/config.yml`
+asigna al label `role` de cada issue (`agents.dev`, `agents.docs`…), con
+`isolation: worktree`, hasta llenar los huecos libres:
+`min(max_open_prs − PRs abiertos, max_awaiting_human − issues en revisión)`.
+Descarta los issues con label `flag`, con `blockedBy` abiertos, con rama o PR
+ya existente, con rol `pm`/`tester`/`reviewer` o sin fichero de agente en
+`.claude/agents/`. No mueve estados: el agente pasa el issue a In Progress al
+crear la rama. Registra cada ejecución en `.ceo/ceo-log.md`.
+
+Para que un repo pueda despachar necesita su agente de desarrollo en
+`.claude/agents/<nombre>.md` (p. ej. `dev-python` en job-finder,
+`dev-typescript` en finanzas-mcp) y `.claude/worktrees/` en `.gitignore`.
+
 ### Guardarraíl
 
 El hook bloquea (exit 2): push a `master`/`main` y forzados, `git reset --hard`,
@@ -152,6 +178,6 @@ claude plugin validate --strict .
 
 | Ámbito | Cómo |
 |---|---|
-| Proyecto | Project label `agent-paused` en Linear |
+| Proyecto | Project label `agent-paused` en Linear (CEO y dispatcher salen sin hacer nada) |
 | Issue | Issue label `agent-paused` |
 | Repo | Fichero `.ceo/PAUSE` |

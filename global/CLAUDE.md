@@ -72,6 +72,7 @@ WebRoblox (Laravel/Filament) · WebRoblox-WP (WordPress) · uigen (Next.js/Prism
 
 ### CEO system (plugin `ceo-system@sityos-agents`)
 - `/ceo-system:ceo-run` — live verification, then `goals.md` → Linear issues in *Proposed*
+- `/ceo-system:dispatch [ID ...]` — launches the repo's agents (`agents.<role>` in `.ceo/config.yml`) on *Ready* issues, one worktree and one PR to `develop` each
 - `/ceo-system:live-verify` — closes merged + deployed issues after checking production
 - `/ceo-system:pm-digest` — daily digest across CEO-system projects
 - Skills `ceo-system:linear-conventions` and `ceo-system:pr-contract` apply whenever an agent reads/moves a Linear issue or opens a PR.
@@ -111,7 +112,7 @@ Use these skills proactively when the task matches — do not wait to be asked:
 | `find-skills` | When the user needs a capability that might exist as an installable skill. Search at skills.sh |
 | `claude-api` | Anything about the Claude API / Anthropic SDK: model IDs, pricing, caching, tool use, batches, agents — always verify before answering |
 | `code-review` · `simplify` | Reviewing a diff/PR for bugs · cleaning up changed code |
-| `ceo-system:*` | Linear planning, live verification, digests and PR contract (see "CEO system") |
+| `ceo-system:*` | Linear planning, dispatch of Ready issues, live verification, digests and PR contract (see "CEO system") |
 | `anthropic-skills:docx` · `pptx` · `xlsx` · `pdf` | Generating, editing or reading Word, PowerPoint, Excel or PDF files |
 
 Global slash commands (`~/.claude/commands/`): `/plan` (architecture proposal) · `/review` (code review) · `/debug` (structured debugging) · `/docker` (Docker setup) · `/service` (full service scaffold).
