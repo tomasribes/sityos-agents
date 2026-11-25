@@ -180,3 +180,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-50 → dev-plugin · In Review · PR #20
 - Descartados y motivo: DEV-51 · bloqueado por DEV-50 (Ready)
 - Lecciones: (1) DEV-49 en Pending live cuenta como desbloqueante, así que DEV-50 salió en este dispatch. (2) La integración de GitHub sigue sin mover los issues: esta vez el agente movió DEV-50 a mano, la vez anterior no. El contrato de `dev-plugin` sigue sin fijarlo. (3) Este dispatch sigue el formato de log de la versión instalada del plugin, que todavía no lleva las líneas `Ejecución`/`Errores` de DEV-49 aunque ya están fusionadas en develop.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-51 → dev-plugin · In Review · PR #22
+- Descartados y motivo: ninguno
+- Lecciones: (1) El worktree aislado volvió a arrancar en `master` (aae3cf5) en lugar de `origin/develop` (4124de6). El agente creó la rama a mano desde develop. DEV-51 mitiga esto con la línea `Base:` y la comprobación `merge-base --is-ancestor`, pero la causa (la base que usa `isolation: worktree`) sigue sin resolver. (2) Esta vez el agente sí movió el issue a In Review a mano. (3) No quedan issues en Ready: KR2.2 queda cubierto cuando se fusione el PR #22.
