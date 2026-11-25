@@ -150,3 +150,21 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-48 → dev-plugin · In Review · PR #15
 - Descartados y motivo: ninguno
 - Lecciones: (1) La integración de GitHub sigue sin mover los issues. Los dos agentes los movieron a mano a In Review. (2) El worktree aislado arrancó en 4b80721 (master) en lugar de origin/develop (89e4338). DEV-46 creó la rama desde origin/develop explícitamente; el contrato del agente debería exigirlo siempre. (3) Fuera de alcance para el dueño: `ceo.md` sigue con `disallowedTools`. El texto de KR2.3 en `goals.md` («sin Bash de escritura») ya no encaja con la opción 2 de DEV-46. `shellcheck` sigue en `gate.pending` de `.ceo/config.yml` aunque `ci.yml` ya lo ejecuta.
+
+### 2026-11-25 · Sityos Agents · live-verify
+- Done: DEV-48 (PR #15, merge 580b7c8) y DEV-46 (PR #14, merge cd081f2). Ambos mergeados a `develop`, y compare contra `master` da `ahead`. El run 45709619411 de ci.yml (d8c5020, 22:01:34Z, success) los contiene. Los runs anteriores dan `diverged`, así que ese es el primero válido. Los dos issues tienen "No aplica: marketplace local", y con el deploy confirmado basta. Comentario de verificación publicado en cada uno.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: Ninguna. `.ceo/config.yml` no define `rollback_workflow`, así que no se comprobó ningún rollback. El `live.url` es un repo privado y no se pudo hacer curl, pero no hizo falta porque ambos issues eran "No aplica".
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: ninguno
+- Blocked y motivo: ninguno
+- Pendientes: ninguno (0 issues en `Pending live` del project Sityos Agents, team DEV)
+- Lecciones: Ninguna. Nota de contexto: `.ceo/config.yml` indica que `ci.yml` aún no existe (lo crea KR1.1), así que los próximos issues quedarán en Pending live hasta que haya workflow en master.
+
+### 2026-11-25T22:06Z · sityos-agents
+- Creados: DEV-49 (KR2.1, High). Los tres comandos añaden en el paso 4 de **Publicar el log** una línea `- Ejecución: <run_id> · ceo-system <versión> · <repo>` y otra `- Errores:` al final de la entrada. La versión sale de `claude plugin list --json`, con `desconocida` si no se obtiene. · DEV-50 (KR2.2, High, bloqueado por DEV-49). Lock con `mkdir` en `git rev-parse --git-common-dir`, que nunca caduca solo, y nueva lectura con `get_issue` justo antes de lanzar cada agente. · DEV-51 (KR2.2, Medium, bloqueado por DEV-50). `BASE_SHA` de `origin/<base>` en el prompt del agente, comprobación con `merge-base --is-ancestor` al terminar y ajuste de `dev-plugin.md` §2.
+- Descartados y motivo: no he creado issues para el texto de KR2.3 en `goals.md`, `disallowedTools` en `ceo.md` ni `shellcheck` en `gate.pending`. Están en zonas human_only o fuera de los KR activos, y los aviso en el status update. No queda ningún otro trabajo dentro de los Active milestones.
+- Preguntas abiertas: ninguna.
+- Lecciones: (1) Los fallos de arranque que recoge el log de dispatch (el worktree que nace en `master`) son la evidencia que justifica los criterios de KR2.2, así que hay que citarlos en el issue. (2) Cuando todos los issues de un KR tocan el mismo comando, la cadena `blocked by` los serializa del todo. Hay que ordenarlos por la fecha del milestone para que lo más urgente no quede detrás. (3) Este agente sigue sin Glob ni Grep, así que la existencia de los ficheros se comprobó con Read.
