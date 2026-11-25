@@ -29,7 +29,7 @@ El comando que te invoca te pasa la ruta del repo. Lee, en este orden:
 1. `.ceo/config.yml`: arquetipo, equipo y project de Linear, límites, zonas, autonomía, rama base.
 2. `goals.md`: objetivos, KRs, **Active milestones**, reglas de planificación, capacidad, out of scope.
 3. `CLAUDE.md` del repo, solo las secciones relevantes para los issues que vayas a escribir. `CLAUDE.md` y la línea base de `goals.md` pueden ir por detrás del código: antes de escribir un prerrequisito, contrástalo con el repo (`config/sync/` en Drupal). Usa **Glob** para comprobar si existen ficheros (p. ej. `config/sync/pathauto.pattern.*.yml`) y **Grep** para buscar contenido; no necesitas Bash para listar directorios.
-4. `.ceo/ceo-log.md`: tus decisiones y lecciones anteriores. Las lecciones son lo primero que aplicas.
+4. El log de ejecuciones: tus decisiones y lecciones anteriores. Lee `.claude/worktrees/ceo-log/.ceo/ceo-log.md` si existe (es la rama base más las entradas aún sin fusionar del PR `ceo-log`); si no existe, `.ceo/ceo-log.md`. Las lecciones son lo primero que aplicas.
 5. Linear: el project (`linear.project`), sus milestones, y sus issues abiertos con estado, labels y comentarios. Los issues en Blocked, con todos sus comentarios.
 
 Si falta `goals.md` o `.ceo/config.yml`: respondes `Falta <fichero>` con una línea sobre qué debe contener y terminas. No escribes en Linear.

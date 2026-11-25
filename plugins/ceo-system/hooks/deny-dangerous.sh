@@ -53,6 +53,10 @@ case "$tool" in
     mg 'git[[:space:]]+reset[^|;&]*--hard' && deny "git reset --hard"
     mg 'git[[:space:]]+clean[^|;&]*-[a-zA-Z]*f' && deny "git clean -f"
     mg 'git[[:space:]]+branch[^|;&]*-D[[:space:]]+(master|main|develop)' && deny "borrar rama protegida"
+    # Closing rule: a git call still starting with an option after normalization carries a
+    # global option GIT_GLOBAL_RE does not know, so the rules above cannot see its subcommand.
+    # Fail closed if push/reset/clean/branch appears as a word in the same segment.
+    mg 'git[[:space:]]+-[^|;&]*[[:space:]](push|reset|clean|branch)([[:space:]]|$)' && deny "opción global de git no reconocida antes de push/reset/clean/branch"
     m 'gh[[:space:]]+pr[[:space:]]+merge' && deny "merge de PR (solo el dueño mergea)"
 
     # Filesystem.
