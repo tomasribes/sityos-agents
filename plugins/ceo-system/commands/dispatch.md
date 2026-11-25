@@ -26,6 +26,14 @@ Solo un dispatch a la vez por clon. El directorio común de git es el mismo desd
 3. Si falla por otro motivo (permisos, ruta inexistente), responde `No se pudo crear el lock: <error>` y termina igual, sin efectos.
 4. Si se crea, el lock es tuyo. Desde aquí, **toda salida** termina con **Liberar el lock** (al final de este fichero) como último paso, después de **Publicar el log**. Las salidas posibles son: `Sin huecos` (paso 2), ningún candidato (paso 3), el final normal tras los agentes (paso 5), un fallo de agente (paso 5), un fallo al publicar el log (paso 8 de **Publicar el log**) y cualquier error inesperado de `gh`, `git` o Linear. Ninguna de ellas deja el lock puesto.
 
+## 1c. Base fijada
+Una sola vez por ejecución, desde la raíz del repo y con `<base>` = `branches.base` (`develop` si no está):
+
+1. `git fetch origin <base>`.
+2. `BASE_SHA=$(git rev-parse origin/<base>)`. `<sha corto>` = `git rev-parse --short <BASE_SHA>`.
+
+`BASE_SHA` no se vuelve a calcular en esta ejecución, aunque **Publicar el log** haga otro `git fetch origin <base>`: es la base que reciben todos los agentes y contra la que se comprueban sus ramas. Aparece en la línea `Huecos` del log como `base <base>@<sha corto>`. Si alguno de los dos comandos falla, es un error inesperado de `git`: no lances agentes, escribe en la línea `Huecos` `base sin fijar (<error>)`, publica el log y libera el lock.
+
 ## 2. Huecos libres
 - `prs_abiertos`: `gh pr list --base <branches.base> --state open --json number,headRefName,title`. Cuenta todos salvo los de `headRefName` igual a `ceo-log` (el PR acumulado del log, ver **Publicar el log**).
 - `en_revision`: issues del proyecto en los estados `in_review` y `human` de `linear.states`.
@@ -53,16 +61,28 @@ Ordena por prioridad (Urgent > High > Medium > Low > sin prioridad) y después p
   Issue: <ID>
   Ruta de trabajo: el worktree aislado en el que arrancas (tu directorio actual). Trabaja solo ahí.
   Fecha actual (UTC): <fecha>
+  Base: origin/<base> @ <BASE_SHA>. Crea tu rama desde ese commit.
   ```
+  `<BASE_SHA>` va completo (40 caracteres), el fijado en **1c. Base fijada**.
 - **No muevas el estado del issue.** El agente comprueba que esté en `Ready` y lo pasa a `In Progress` al crear la rama.
 - Espera a que terminen todos. No implementes nada tú, aunque un agente falle.
+
+## 4b. Comprobación de la base
+Cuando hayan terminado todos los agentes, comprueba cada issue lanzado cuya rama (`gitBranchName`) exista en el remoto (`git ls-remote --heads origin <rama>` no vacío). Los que no la empujaron no se comprueban.
+
+1. `git fetch origin <rama>`.
+2. `git merge-base --is-ancestor <BASE_SHA> origin/<rama>`. Exit 0: la rama parte de la base fijada (o la contiene), correcto.
+3. Exit 1: la rama no contiene la base (por ejemplo, el worktree arrancó en `master`). En `Lanzados` marca ese issue `ERROR: rama no contiene base <sha corto>`.
+4. Cualquier otro fallo de los pasos 1 o 2: márcalo `ERROR: no se pudo comprobar la base (<error>)`.
+
+En los casos 3 y 4 **no toques el issue ni el PR**: ni estado, ni labels, ni comentarios, ni cierre. Lo decide el dueño con la entrada del log.
 
 ## 5. Log e informe
 Prepara esta entrada y publícala con el bloque **Publicar el log** (al final de este fichero).
 
 ```
 ### <fecha UTC> · <project> · dispatch
-- Huecos: <huecos> (PRs abiertos <n>/<max_open_prs> · en revisión <n>/<max_awaiting_human>)
+- Huecos: <huecos> (PRs abiertos <n>/<max_open_prs> · en revisión <n>/<max_awaiting_human>) · base <base>@<sha corto>
 - Lanzados: <ID> → <agente> · <estado final en Linear> · <PR o "sin PR"> (uno por línea)
 - Descartados y motivo: <ID> · <motivo> (o "ninguno")
 - Lecciones: <lo que haya fallado en el arranque o en el contrato del agente, o "Ninguna">
