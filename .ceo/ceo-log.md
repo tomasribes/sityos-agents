@@ -27,3 +27,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-40 → dev-plugin · In Progress · PR #7
 - Descartados y motivo: DEV-41 · blockedBy DEV-39 y DEV-40 (no están en Done ni en Pending live)
 - Lecciones: la integración de GitHub no movió los issues a In Review al abrir el PR. DEV-39 lo movió el agente y DEV-40 sigue en In Progress con el PR abierto. El hook deny-dangerous bloqueó `gh pr create` porque el cuerpo del PR contenía la palabra «secrets» (falso positivo).
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-41 → dev-plugin · Blocked · sin PR
+- Descartados y motivo: ninguno
+- Lecciones: el agente bloqueó al arrancar porque el criterio 2 (tag manual en `master`) contradice un comentario del dueño sin responder (tags automáticos). El CEO debería revisar los comentarios del dueño antes de dejar un issue en Ready. Antes de despachar hubo que hacer fast-forward de `develop` en local para que el worktree incluyera los PR #6 y #7.
