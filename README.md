@@ -211,8 +211,12 @@ repo; el nombre del secreto es un ejemplo).
   jq -r .version plugins/ceo-system/.claude-plugin/plugin.json
   ```
 
-- **Quién crea el tag:** el dueño, a mano, tras el merge a `master` y con
-  `ci.yml` en verde sobre ese commit. Ningún agente crea ni empuja tags.
+- **Quién crea el tag:** el workflow `.github/workflows/release-tag.yml`, tras
+  un run verde de `ci.yml` por push a `master`. Etiqueta ese mismo commit con
+  `ceo-system-v<versión de plugin.json>` y falla sin crear tag si la versión
+  no coincide con la del catálogo. Un tag existente no se mueve ni se
+  sobrescribe: el run termina en verde con un aviso. Ningún agente crea ni
+  empuja tags.
 
 **Qué versión carga Claude.** `claude plugin list` muestra cada plugin
 instalado con su versión, su ámbito y si está habilitado. Para ver solo
