@@ -130,3 +130,10 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Blocked y motivo: ninguno.
 - Pendientes: ninguno.
 - Lecciones: ninguna. `live.url` es el repo privado de GitHub y no se puede consultar con curl. Todos los issues de este proyecto deben llevar "No aplica". Config sin `rollback_workflow`, así que no se comprobó ningún rollback.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-47 → dev-plugin · In Review · PR #12
+- Lanzados: DEV-44 → dev-plugin · In Progress · PR #13
+- Descartados y motivo: DEV-46 · sin hueco · DEV-48 · sin hueco
+- Lecciones: la integración de GitHub sigue sin mover los issues: DEV-44 se queda en In Progress con el PR abierto. Los PR #12 y #13 tocan secciones distintas del README. Es la última entrada que se commitea en develop: cuando se fusione el PR #13, el log pasa a la rama `ceo-log`.
