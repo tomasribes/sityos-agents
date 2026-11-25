@@ -143,3 +143,10 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Blocked y motivo: ninguno.
 - Pendientes: ninguno.
 - Lecciones: Ninguna. Una nota menor: el campo `live.url` apunta a un repo privado y no se puede comprobar con curl. Esto no afecta mientras los issues sean "No aplica".
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-46 → dev-plugin · In Review · PR #14
+- Lanzados: DEV-48 → dev-plugin · In Review · PR #15
+- Descartados y motivo: ninguno
+- Lecciones: (1) La integración de GitHub sigue sin mover los issues. Los dos agentes los movieron a mano a In Review. (2) El worktree aislado arrancó en 4b80721 (master) en lugar de origin/develop (89e4338). DEV-46 creó la rama desde origin/develop explícitamente; el contrato del agente debería exigirlo siempre. (3) Fuera de alcance para el dueño: `ceo.md` sigue con `disallowedTools`. El texto de KR2.3 en `goals.md` («sin Bash de escritura») ya no encaja con la opción 2 de DEV-46. `shellcheck` sigue en `gate.pending` de `.ceo/config.yml` aunque `ci.yml` ya lo ejecuta.
