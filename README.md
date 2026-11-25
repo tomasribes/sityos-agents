@@ -186,6 +186,47 @@ repo; el nombre del secreto es un ejemplo).
     claude plugin install ceo-system@sityos-agents --scope project
 ```
 
+### Versiones
+
+- **Ref de distribución:** el tag `ceo-system-vX.Y.Z` sobre `master`. El
+  primero es `ceo-system-v0.3.1`. Un repo consumidor que quiera fijar la
+  versión añade `ref` a la fuente del marketplace (`ref` admite una rama o un
+  tag):
+
+  ```json
+  "source": {
+    "source": "github",
+    "repo": "tomasribes/sityos-agents",
+    "ref": "ceo-system-v0.3.1"
+  }
+  ```
+
+- **Una sola versión:** el catálogo (`.claude-plugin/marketplace.json`,
+  `metadata.version` y `plugins[0].version`) y el plugin
+  (`plugins/ceo-system/.claude-plugin/plugin.json`, `version`) llevan siempre
+  la misma versión. Para comprobarlo:
+
+  ```bash
+  jq -r '.metadata.version, .plugins[0].version' .claude-plugin/marketplace.json
+  jq -r .version plugins/ceo-system/.claude-plugin/plugin.json
+  ```
+
+- **Quién crea el tag:** el dueño, a mano, tras el merge a `master` y con
+  `ci.yml` en verde sobre ese commit. Ningún agente crea ni empuja tags.
+
+**Qué versión carga Claude.** `claude plugin list` muestra cada plugin
+instalado con su versión, su ámbito y si está habilitado. Para ver solo
+`ceo-system`:
+
+```bash
+claude plugin list --json | jq '.[] | select(.id == "ceo-system@sityos-agents") | {version, scope, enabled}'
+```
+
+`version` es la versión instalada en caché, la que carga una sesión normal. Si
+no coincide con la del tag que esperas, el clon tiene una instalación antigua.
+Con `claude --plugin-dir ./plugins/ceo-system` se carga el working tree, no la
+caché.
+
 ### Requisitos por repo
 
 Un repo participa en el sistema cuando tiene `goals.md` (escrito por el dueño)
