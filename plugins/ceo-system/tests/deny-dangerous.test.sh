@@ -28,6 +28,16 @@ t ok   $B $c 'git push origin develop'
 t DENY $B $c 'git reset --hard HEAD~1'
 t DENY $B $c 'gh pr merge 12 --squash'
 t ok   $B $c 'gh pr create --base develop --title "DEV-12: x"'
+# git with global options (-C, -c, --git-dir, --no-pager) before the subcommand
+t DENY $B $c 'git -C /repo push origin master'
+t DENY $B $c 'git -C "/tmp/a b" push --force origin x'
+t DENY $B $c 'git -c user.name=x push origin HEAD:main'
+t DENY $B $c 'git --git-dir=/repo/.git reset --hard'
+t DENY $B $c 'git -C /repo clean -fd'
+t DENY $B $c 'git --no-pager -C /repo branch -D develop'
+t ok   $B $c 'git -C .claude/worktrees/ceo-log push origin ceo-log'
+t ok   $B $c 'git -C /repo log --oneline -5'
+t ok   $B $c 'git -C /repo commit -m "x" -- .ceo/ceo-log.md'
 # filesystem
 t DENY $B $c 'rm -rf build/'
 t DENY $B $c 'rm -fr node_modules'
@@ -71,6 +81,15 @@ t ok   Read file_path '/repo/src/environment.ts'
 # malformed input must fail closed
 printf 'not json' | "$HOOK" >/dev/null 2>&1
 if [ $? -eq 2 ]; then echo 'PASS DENY malformed input'; else echo 'FAIL DENY malformed input'; fails=$((fails + 1)); fi
+
+# missing jq must fail closed. /bin/bash is explicit because the shebang
+# (#!/usr/bin/env bash) cannot resolve bash with an empty PATH.
+err=$(printf '{}' | PATH=/nonexistent /bin/bash "$HOOK" 2>&1 >/dev/null); rc=$?
+if [ $rc -eq 2 ] && [[ $err == *'jq no está instalado'* ]]; then
+  echo 'PASS DENY missing jq'
+else
+  echo "FAIL DENY missing jq (rc=$rc)"; fails=$((fails + 1))
+fi
 
 echo "---- failures: $fails"
 exit $fails
