@@ -19,6 +19,13 @@ tool=$(printf '%s' "$input" | jq -r '.tool_name // ""' 2>/dev/null) || deny "ent
 SECRET_RE='(^|[/[:space:]"'"'"'=])\.env(\.[A-Za-z0-9_-]+)?([[:space:]"'"'"';|&)]|$)|id_(rsa|ed25519|ecdsa)([^.]|$)|\.pem([[:space:]"'"'"']|$)|(^|[/[:space:]"'"'"'])(credentials|secrets|keys)(/|[[:space:]"'"'"']|$)|\.keystore([[:space:]"'"'"']|$)|keystore\.(json|jks)'
 SECRET_OK_RE='\.env\.(example|dist|sample|template)'
 
+# Git global options that may sit between "git" and the subcommand
+# (git -C <dir> push, git -c k=v reset, git --git-dir=<dir> clean ...).
+# They are stripped so the git rules below see the bare subcommand.
+# <arg>: double-quoted, single-quoted or a word without spaces (segments may be glued).
+GIT_ARG_RE="(\"[^\"]*\"|'[^']*'|[^[:space:]\"']+)+"
+GIT_GLOBAL_RE="git[[:space:]]+(-[Cc][[:space:]]+${GIT_ARG_RE}|--(git-dir|work-tree|namespace)(=|[[:space:]]+)${GIT_ARG_RE}|--no-pager|--paginate|--bare|--no-optional-locks|-p|-P)[[:space:]]+"
+
 is_secret_path() {
   local p="$1"
   printf '%s' "$p" | grep -Eq "$SECRET_OK_RE" && return 1
@@ -30,12 +37,22 @@ case "$tool" in
     cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // ""')
     m() { printf '%s' "$cmd" | grep -Eq "$1"; }
 
+    # Strip git global options. Each pass removes one option per git call and every
+    # replacement shortens the string, so the loop always ends.
+    gitcmd=$cmd
+    while :; do
+      next=$(printf '%s' "$gitcmd" | sed -E "s/$GIT_GLOBAL_RE/git /g") || deny "no se pudieron normalizar las opciones globales de git"
+      [ "$next" = "$gitcmd" ] && break
+      gitcmd=$next
+    done
+    mg() { printf '%s' "$gitcmd" | grep -Eq "$1"; }
+
     # Git: protected branches, force pushes, destructive resets, merges by agents.
-    m 'git[[:space:]]+push([^|;&]*)[[:space:]:+](master|main)([[:space:]]|$)' && deny "push a master/main"
-    m 'git[[:space:]]+push[^|;&]*(--force|--force-with-lease|[[:space:]]-f([[:space:]]|$)|[[:space:]]\+)' && deny "push forzado"
-    m 'git[[:space:]]+reset[^|;&]*--hard' && deny "git reset --hard"
-    m 'git[[:space:]]+clean[^|;&]*-[a-zA-Z]*f' && deny "git clean -f"
-    m 'git[[:space:]]+branch[^|;&]*-D[[:space:]]+(master|main|develop)' && deny "borrar rama protegida"
+    mg 'git[[:space:]]+push([^|;&]*)[[:space:]:+](master|main)([[:space:]]|$)' && deny "push a master/main"
+    mg 'git[[:space:]]+push[^|;&]*(--force|--force-with-lease|[[:space:]]-f([[:space:]]|$)|[[:space:]]\+)' && deny "push forzado"
+    mg 'git[[:space:]]+reset[^|;&]*--hard' && deny "git reset --hard"
+    mg 'git[[:space:]]+clean[^|;&]*-[a-zA-Z]*f' && deny "git clean -f"
+    mg 'git[[:space:]]+branch[^|;&]*-D[[:space:]]+(master|main|develop)' && deny "borrar rama protegida"
     m 'gh[[:space:]]+pr[[:space:]]+merge' && deny "merge de PR (solo el dueño mergea)"
 
     # Filesystem.
