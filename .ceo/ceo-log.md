@@ -8,3 +8,15 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: —
 - Preguntas abiertas: —
 - Lecciones: no hay web pública ni CI todavía; "live" = merge en `master` con `ci.yml` en verde, que crea KR1.1. Hasta entonces los issues esperan en `Pending live`. Este repo es la fuente del propio plugin: `global/**`, los hooks y los manifiestos son human_only porque afectan a todas las sesiones y a todos los repos CEO. La adaptación del piloto en AI-Automation va en el proyecto Sityos-AI, enlazada con `blocked by`.
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: ninguno.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno (0 issues en `Pending live` del project Sityos Agents, team DEV).
+- Lecciones: Ninguna. Nota: `live.deploy_workflow: ci.yml` aún no existe (lo crea KR1.1), así que cuando aparezcan issues en `Pending live` esperarán a ese workflow.
+
+### 2026-11-25T19:20Z · sityos-agents
+- Creados: DEV-39 (KR1.1, CI con el gate, `shellcheck -S error`, CLI fijado en 2.1.332, High) · DEV-40 (KR1.3, README de instalación por proyecto, `--plugin-dir` y ejemplo de GitHub Actions, Medium) · DEV-41 (KR1.2, catálogo alineado en 0.3.1 sin subir versión, sección `### Versiones`, Medium, blocked by DEV-39 y DEV-40 porque comparte README con DEV-40).
+- Descartados y motivo: KR2.1, KR2.2, KR2.3 y KR3.1 aplazados por el tope de 3 issues por ejecución y el orden O1 > O2 > O3. KR2.1 va en el siguiente lote.
+- Preguntas abiertas: ninguna.
+- Lecciones: no existe el área `docs`, así que los issues de README llevan `infra`. El único rol con agente es `dev` (`dev-plugin`), por lo que la documentación también va con el rol `dev`. Los issues de este repo tocan zonas human_only casi siempre (`.github/**`, `.claude-plugin/**`): se marcan en la descripción y nunca con `needs-human`. Este agente no tiene Glob: la existencia de ficheros se comprobó con Read.
