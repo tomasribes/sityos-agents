@@ -93,3 +93,15 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-44 → dev-plugin · Blocked · sin PR
 - Descartados y motivo: ninguno
 - Lecciones: el dueño eligió la opción 3 (log en Git con un PR por ejecución), pero los criterios siguen siendo los de la opción 1 y el issue volvió a Ready sin reescribirlos. Si se quita `needs-human` con una opción que cambia los criterios, el CEO tiene que reescribirlos antes de que el issue vuelva a Ready.
+
+### 2026-11-25 · Sityos Agents · live-verify
+- Done: DEV-43. Comentario de verificación publicado en el issue. No hay `rollback_workflow` configurado.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: ninguna. La señal de "deploy" es ci.yml en verde sobre master, tal como declara `.ceo/config.yml`. `live.url` es un repo privado y no se comprobó con curl, porque el issue era "No aplica".
+
+### 2026-11-25T21:10Z · sityos-agents
+- Creados: DEV-45 (KR2.3, Urgent por override de seguridad). El hook normaliza las opciones globales de git (`-C`, `-c`, `--git-dir`, `--work-tree`…) antes de aplicar las reglas de push, reset, clean y branch, y añade el test de "falta jq". Toca una zona human_only. · DEV-46 (KR2.3, Medium). Lista `tools:` explícita en pm y verifier, con Bash acotado por prefijo. Antes hay que confirmar en la documentación que `tools` admite especificadores. · Actualizado DEV-44 (KR2.1, High). Reescrito para la opción 3 del dueño: worktree persistente `.claude/worktrees/ceo-log`, rama `ceo-log` con un único PR acumulado contra `develop`, dispatch que no cuenta ese PR y CEO que lee el log del worktree. Vuelve de Blocked a Proposed y queda blocked by DEV-45.
+- Descartados y motivo: el resultado estructurado de KR2.1 espera a DEV-44, porque su formato depende del flujo del log. KR2.2 sigue bloqueado por KR2.1. KR3.1 se aplaza por capacidad: con DEV-44, DEV-45 y DEV-46 ya hay unas 6 h. La incoherencia de `agent-paused` que dejó DEV-43 (`agents/ceo.md` paso 1 y Kill-switches de linear-conventions) es cosmética y no la he convertido en issue.
+- Preguntas abiertas: ninguna.
+- Lecciones: (1) Antes de diseñar un flujo con git, revisa cómo lo interpreta el hook. Las reglas del guardarraíl empiezan en `git[[:space:]]+<subcomando>` y no ven las opciones globales, y la batería de tests no tenía ningún caso con `-C`. (2) Cuando el dueño elige una opción que cambia los criterios y deja preguntas abiertas, el CEO decide cada punto en la descripción con su motivo y lo confirma en un comentario. Si no, el agente dev vuelve a bloquear el issue. (3) El CEO no tiene Bash, así que cualquier dato que tenga que leer (como el log sin fusionar) tiene que estar en una ruta de disco, no solo en una rama remota.
