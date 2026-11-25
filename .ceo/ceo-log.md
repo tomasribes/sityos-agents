@@ -81,3 +81,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-43 → dev-plugin · In Review · PR #10
 - Descartados y motivo: DEV-44 · flag `needs-human` (falta decidir dónde vive el log)
 - Lecciones: la integración de GitHub sigue sin mover los issues (quinta vez). El agente detectó dos sitios fuera de alcance que no quedaron coherentes con `agent-paused`: el paso 1 de `agents/ceo.md` y la sección Kill-switches de `linear-conventions`.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 1 (PRs abiertos 1/2 · en revisión 1/3)
+- Lanzados: ninguno
+- Descartados y motivo: DEV-44 · blockedBy DEV-43 (In Review, PR #10 sin fusionar). Ya no tiene `needs-human`.
+- Lecciones: Ninguna
