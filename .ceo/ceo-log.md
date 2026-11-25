@@ -63,3 +63,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: el resultado estructurado de KR2.1, KR2.2, KR2.3 y KR3.1, por el límite de 3 issues y el orden O1 > O2 > O3. KR2.2 sigue bloqueado por KR2.1. El siguiente lote es KR2.3, que no comparte ficheros con KR2.1, y el resultado estructurado de KR2.1.
 - Preguntas abiertas: DEV-44, dónde vive el log: 1 fichero local fuera de Git (recomendado) · 2 comentarios en el project de Linear · 3 Git con un PR por ejecución.
 - Lecciones: las respuestas del dueño en los comentarios de issues ya Done (DEV-41, opción 1) son trabajo pendiente y hay que buscarlas. Los issues de este repo casi siempre tocan el README, así que quedan en serie con `blocked by`; para que puedan ir en paralelo hay que meter en el mismo lote un KR que toque otros ficheros (por ejemplo KR2.3). Este agente sigue sin Glob ni Grep: la existencia de ficheros se comprobó con Read.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-42 → dev-plugin · In Review · PR #9
+- Descartados y motivo: DEV-43 · blockedBy DEV-42 (Ready) · DEV-44 · flag `needs-human` y blockedBy DEV-43
+- Lecciones: la integración de GitHub sigue sin mover los issues al empujar la rama ni al abrir el PR, así que el agente los mueve a mano. Es la cuarta vez seguida.
