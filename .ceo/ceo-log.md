@@ -137,3 +137,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-44 → dev-plugin · In Progress · PR #13
 - Descartados y motivo: DEV-46 · sin hueco · DEV-48 · sin hueco
 - Lecciones: la integración de GitHub sigue sin mover los issues: DEV-44 se queda en In Progress con el PR abierto. Los PR #12 y #13 tocan secciones distintas del README. Es la última entrada que se commitea en develop: cuando se fusione el PR #13, el log pasa a la rama `ceo-log`.
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: DEV-44 y DEV-47. Ambos PR están mergeados en develop y sus merge commits son ancestros de master (compare = ahead). El run 45707888759 de ci.yml en master (headSha 4b80721, 2026-11-25T21:49:51Z, success) es el primero que contiene ambos commits. Los dos issues tienen "No aplica: marketplace local" en su sección de verificación, así que con el deploy confirmado bastaba. No hay rollback_workflow configurado.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: Ninguna. Una nota menor: el campo `live.url` apunta a un repo privado y no se puede comprobar con curl. Esto no afecta mientras los issues sean "No aplica".
