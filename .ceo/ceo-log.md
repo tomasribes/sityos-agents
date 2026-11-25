@@ -33,3 +33,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-41 → dev-plugin · Blocked · sin PR
 - Descartados y motivo: ninguno
 - Lecciones: el agente bloqueó al arrancar porque el criterio 2 (tag manual en `master`) contradice un comentario del dueño sin responder (tags automáticos). El CEO debería revisar los comentarios del dueño antes de dejar un issue en Ready. Antes de despachar hubo que hacer fast-forward de `develop` en local para que el worktree incluyera los PR #6 y #7.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: ninguno
+- Descartados y motivo: DEV-41 · estado Blocked, no Ready (espera respuesta del dueño sobre el criterio del tag)
+- Lecciones: Ninguna
