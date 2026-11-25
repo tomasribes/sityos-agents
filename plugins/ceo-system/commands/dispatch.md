@@ -13,10 +13,23 @@ Argumentos: `$ARGUMENTS`. Si trae identificadores (`DEV-19 DEV-20`), solo consid
 3. Lee `.ceo/config.yml`: `project`, `linear.team`, `linear.project`, `linear.states`, `agents`, `limits`, `autonomy`, `branches.base`.
 4. Si el proyecto de Linear tiene el **project label** `agent-paused`, responde `Proyecto en pausa (agent-paused)` y termina.
 
+## 1b. Lock de ejecución
+Solo un dispatch a la vez por clon. El directorio común de git es el mismo desde el checkout principal y desde cualquier worktree, así que el lock lo comparten todas las sesiones del clon. No se versiona.
+
+1. Desde la raíz del repo, ejecuta `mkdir "$(git rev-parse --git-common-dir)/ceo-dispatch.lock"`.
+2. Si falla porque el directorio ya existe, otro dispatch está en curso o uno anterior quedó a medias. Calcula `<ruta>` = `"$(git rev-parse --path-format=absolute --git-common-dir)/ceo-dispatch.lock"` y `<fecha>` = la fecha que muestra `ls -ld <ruta>`. Responde exactamente:
+   ```
+   Dispatch en curso (lock <ruta> desde <fecha>)
+   Si no hay otro dispatch en marcha, el lock es huérfano. Quítalo a mano con: rmdir "<ruta>"
+   ```
+   y termina. No escribas en Linear, no lances agentes, no publiques el log y **no borres el lock**: un lock huérfano nunca se quita solo, lo quita el dueño con ese `rmdir`.
+3. Si falla por otro motivo (permisos, ruta inexistente), responde `No se pudo crear el lock: <error>` y termina igual, sin efectos.
+4. Si se crea, el lock es tuyo. Desde aquí, **toda salida** termina con **Liberar el lock** (al final de este fichero) como último paso, después de **Publicar el log**. Las salidas posibles son: `Sin huecos` (paso 2), ningún candidato (paso 3), el final normal tras los agentes (paso 5), un fallo de agente (paso 5), un fallo al publicar el log (paso 8 de **Publicar el log**) y cualquier error inesperado de `gh`, `git` o Linear. Ninguna de ellas deja el lock puesto.
+
 ## 2. Huecos libres
 - `prs_abiertos`: `gh pr list --base <branches.base> --state open --json number,headRefName,title`. Cuenta todos salvo los de `headRefName` igual a `ceo-log` (el PR acumulado del log, ver **Publicar el log**).
 - `en_revision`: issues del proyecto en los estados `in_review` y `human` de `linear.states`.
-- `huecos = min(limits.max_open_prs − prs_abiertos, limits.max_awaiting_human − en_revision)`. Si `huecos ≤ 0`, informa `Sin huecos` con los números y termina (publica igualmente la entrada de log).
+- `huecos = min(limits.max_open_prs − prs_abiertos, limits.max_awaiting_human − en_revision)`. Si `huecos ≤ 0`, informa `Sin huecos` con los números, publica igualmente la entrada de log, libera el lock (**Liberar el lock**) y termina.
 
 ## 3. Candidatos
 Issues del proyecto `linear.project`, team `linear.team`, en el estado `ready` de `linear.states` (filtrados por `$ARGUMENTS` si los hay). Un issue es candidato solo si cumple **todo**:
@@ -27,11 +40,15 @@ Issues del proyecto `linear.project`, team `linear.team`, en el estado `ready` d
 - No tiene relaciones `blockedBy` con issues que no estén en `done` o en `live` (`get_issue` con relaciones).
 - No hay ya un PR abierto ni una rama remota con su `gitBranchName` (`git ls-remote --heads origin <rama>`).
 
-Ordena por prioridad (Urgent > High > Medium > Low > sin prioridad) y después por la fecha objetivo de su milestone, la más cercana primero. Elige los `huecos` primeros. El resto queda descartado con el motivo `sin hueco`.
+Ordena por prioridad (Urgent > High > Medium > Low > sin prioridad) y después por la fecha objetivo de su milestone, la más cercana primero. Elige los `huecos` primeros. El resto queda descartado con el motivo `sin hueco`. Si no queda ningún candidato, salta al paso 5 (log con `Lanzados: ninguno`) y después libera el lock.
 
 ## 4. Lanzamiento
 - Comprueba que `.claude/worktrees/` está ignorado (`git check-ignore -q .claude/worktrees/x`). Si no lo está, avisa en el informe; no edites `.gitignore`.
-- Para cada issue elegido, lanza **en paralelo** el agente `agents[<role>]` con la herramienta Agent, `isolation: "worktree"`, y este prompt exacto (sin instrucciones propias):
+- **Relectura justo antes de lanzar.** Para cada issue elegido, vuelve a llamar a `get_issue` con relaciones inmediatamente antes de lanzar su agente. Si ya no está en el estado `ready` de `linear.states`, tiene algún label del grupo `flag` o tiene un `blockedBy` con un issue que no está en `done` ni en `live`:
+  - no lances su agente y no cambies nada en él (ni estado, ni labels, ni comentarios);
+  - añádelo a `Descartados` con el motivo `cambió antes de lanzar (<estado actual o label flag o blockedBy ID>)`, por ejemplo `cambió antes de lanzar (Proposed)` o `cambió antes de lanzar (needs-human)`;
+  - su hueco queda libre en esta ejecución: no elijas otro candidato para ocuparlo.
+- Para cada issue que siga siendo válido tras la relectura, lanza **en paralelo** el agente `agents[<role>]` con la herramienta Agent, `isolation: "worktree"`, y este prompt exacto (sin instrucciones propias):
   ```
   Issue: <ID>
   Ruta de trabajo: el worktree aislado en el que arrancas (tu directorio actual). Trabaja solo ahí.
@@ -56,7 +73,9 @@ Después muéstrame, en este orden:
 2. El bloque `## Resultado` de cada agente, tal cual lo devolvió.
 3. Los worktrees de agentes que hayan quedado con cambios (ruta; nunca `.claude/worktrees/ceo-log`), para que el dueño los limpie con `git worktree remove` cuando el PR esté fusionado.
 
-Si un agente falla o no devuelve su bloque `## Resultado`, indícalo en `Lanzados` como `ERROR: <motivo>` y dímelo.
+Si un agente falla o no devuelve su bloque `## Resultado`, indícalo en `Lanzados` como `ERROR: <motivo>` y dímelo. Publica igualmente el log y después libera el lock.
+
+Tras **Publicar el log** (haya ido bien o haya acabado en su paso 8), ejecuta **Liberar el lock**. Es siempre el último paso.
 
 ## Publicar el log
 
@@ -77,4 +96,11 @@ La entrada nunca se escribe ni se commitea en el checkout principal ni en la ram
 5. `git -C .claude/worktrees/ceo-log add .ceo/ceo-log.md` y `git -C .claude/worktrees/ceo-log commit -m "Update CEO log: dispatch <fecha UTC>" -- .ceo/ceo-log.md`. Solo ese fichero. Sin trailers.
 6. `git -C .claude/worktrees/ceo-log push -u origin ceo-log`. Nunca forzado y nunca a otra rama. Si se rechaza (por ejemplo, el PR anterior se fusionó con squash y la rama remota sigue ahí), ve al paso 8.
 7. Si en el paso 2 no había PR: `gh pr create --base <base> --head ceo-log --title "CEO log" --body "Entradas de .ceo/ceo-log.md escritas por ceo-run, dispatch y live-verify. Fusionar con merge commit."`.
-8. Si algo falla: no reintentes, no fuerces nada y no toques el checkout principal. Añade al final de tu respuesta `ceo-log sin publicar: <motivo>` y muestra la entrada completa para que no se pierda.
+8. Si algo falla: no reintentes, no fuerces nada y no toques el checkout principal. Añade al final de tu respuesta `ceo-log sin publicar: <motivo>` y muestra la entrada completa para que no se pierda. Después ejecuta **Liberar el lock**.
+
+## Liberar el lock
+
+Último paso de toda salida posterior a la creación del lock (paso 1b): `Sin huecos`, ningún candidato, final normal, fallo de agente, fallo al publicar el log o error inesperado. Nunca se ejecuta en la salida `Dispatch en curso`: ese lock no es tuyo.
+
+1. Desde la raíz del repo, ejecuta `rmdir "$(git rev-parse --git-common-dir)/ceo-dispatch.lock"`.
+2. Si falla, no lo fuerces (nunca `rm -rf`). Añade al final de tu respuesta `Lock sin liberar: <error>` con el comando `rmdir` y la ruta absoluta (`git rev-parse --path-format=absolute --git-common-dir`) para que el dueño lo quite a mano.

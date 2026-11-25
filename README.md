@@ -258,6 +258,17 @@ ya existente, con rol `pm`/`tester`/`reviewer` o sin fichero de agente en
 `.claude/agents/`. No mueve estados: el agente pasa el issue a In Progress al
 crear la rama. Registra cada ejecución en `.ceo/ceo-log.md`.
 
+Solo corre un dispatch a la vez por clon. Tras los kill-switches crea el lock
+`ceo-dispatch.lock` con `mkdir` en `git rev-parse --git-common-dir` (compartido
+por el checkout principal y todos sus worktrees, sin versionar). Si ya existe, el
+segundo dispatch responde `Dispatch en curso (lock <ruta> desde <fecha>)` y sale
+sin tocar Linear, ramas, PRs ni el log. El lock se libera con `rmdir` como último
+paso de toda salida posterior (incluidas `Sin huecos` y un fallo de agente). No
+caduca: si queda huérfano, el mensaje trae el `rmdir` exacto para quitarlo a mano.
+Justo antes de lanzar cada agente, el dispatcher relee el issue: si ya no está en
+Ready, tiene un label `flag` o un `blockedBy` abierto, no lo toca y lo anota en
+`Descartados` como `cambió antes de lanzar (<estado o label>)`.
+
 **ceo-log.md:** `ceo-run`, `live-verify` y `dispatch` nunca commitean ni
 pushean el log en `branches.base` (`develop`) ni tocan el checkout del dueño.
 Cada ejecución añade su entrada como commit nuevo en la rama `ceo-log`, desde
