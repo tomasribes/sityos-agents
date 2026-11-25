@@ -112,3 +112,15 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-46 → dev-plugin · Blocked · sin PR
 - Descartados y motivo: DEV-44 · blockedBy DEV-45 (Ready, aún no está en Done ni en Pending live)
 - Lecciones: DEV-46 se bloqueó porque la documentación de subagentes no admite `Bash(prefijo:*)` en `tools`: el CEO dio por buena una sintaxis sin verificarla. DEV-45 dejó fuera algunas opciones globales de git (`--exec-path`, `--config-env`…). La integración de GitHub sigue sin mover los issues.
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: ninguno.
+- Blocked y motivo: ninguno.
+- Pendientes: DEV-45 sigue en Pending live, sin comentario en Linear. Esperando el merge develop→master y un run correcto de `ci.yml` en `master`. No he comprobado deploy ni checks en vivo, porque el commit no ha llegado a `master`. El issue declara `No aplica: marketplace local`, así que cuando llegue a `master` bastará con un run `success` de `ci.yml` cuyo `headSha` contenga 13c93cb.
+- Lecciones: Ninguna.
+
+### 2026-11-25T21:33Z · sityos-agents
+- Creados: DEV-47 (KR2.3, Urgent por override de seguridad). Se añade una regla de cierre en el hook: si después de normalizar la llamada a git sigue empezando por `git -…` y el mismo segmento contiene push, reset, clean o branch, se bloquea. Añade 7 casos al test y una frase en `### Guardarraíl` del README. Es related de DEV-45 y DEV-44. · DEV-48 (KR3.1, Medium). Crea `AGENTS.md` (≤ 150 líneas: componentes, gate, never_run, ramas y zonas por remisión) y `CLAUDE.md` (≤ 40 líneas: `@AGENTS.md`, `--plugin-dir`, versión, puntos de entrada). · Actualizado DEV-46 (KR2.3, Medium). Reescrito para la opción 2 del dueño: `tools` con Bash entero y una lista cerrada de herramientas Linear y Chrome por agente. Pasa de Blocked a Proposed y lleva un comentario de confirmación.
+- Descartados y motivo: el resultado estructurado de KR2.1 y el issue de KR2.2 esperan a DEV-44 (flujo del log y `dispatch.md`). La incoherencia de `agent-paused` en `agents/ceo.md` y en linear-conventions sigue siendo cosmética y no he creado issue.
+- Preguntas abiertas: ninguna.
+- Lecciones: (1) Una lista cerrada de excepciones en un guardarraíl de regex siempre deja huecos. Hay que preferir reglas que fallen cerradas ante lo que no se reconoce. (2) Antes de fijar una sintaxis de frontmatter en los criterios, hay que citar la documentación (DEV-46 se bloqueó por `Bash(prefijo:*)`). (3) Los issues del README pueden ir en paralelo si cada uno declara la sección exacta que toca. (4) Sin Glob ni Grep, la existencia de ficheros se sigue comprobando con Read.
