@@ -268,6 +268,16 @@ caduca: si queda huérfano, el mensaje trae el `rmdir` exacto para quitarlo a ma
 Justo antes de lanzar cada agente, el dispatcher relee el issue: si ya no está en
 Ready, tiene un label `flag` o un `blockedBy` abierto, no lo toca y lo anota en
 `Descartados` como `cambió antes de lanzar (<estado o label>)`.
+Tras tomar el lock, el dispatcher hace `git fetch origin <base>` y fija una sola
+vez `BASE_SHA=$(git rev-parse origin/<base>)`; la línea `Huecos` del log lo
+muestra como `base <base>@<sha corto>`. Cada agente recibe en su prompt la línea
+`Base: origin/<base> @ <BASE_SHA>. Crea tu rama desde ese commit.` (el agente
+`dev-plugin` crea la rama con `git switch -c <rama> <sha>` y comprueba `HEAD`).
+Al terminar, por cada rama empujada ejecuta `git merge-base --is-ancestor
+<BASE_SHA> origin/<rama>`: si la rama no contiene la base (por ejemplo, el
+worktree arrancó en `master`), `Lanzados` la marca `ERROR: rama no contiene base
+<sha corto>` y el dispatcher no toca el issue ni el PR. La comprobación vale para
+cualquier agente, aunque no conozca la línea `Base:`.
 
 **ceo-log.md:** `ceo-run`, `live-verify` y `dispatch` nunca commitean ni
 pushean el log en `branches.base` (`develop`) ni tocan el checkout del dueño.

@@ -18,7 +18,9 @@ Lee el issue (`get_issue`) y sus comentarios (`list_comments`). Para y mueve el 
 No improvises: si falta una decisión, pregúntala en el issue y para.
 
 ## 2. Rama
-- Parte de `origin/develop` actualizado (`git fetch origin develop`) y comprueba que `HEAD` coincide con ese SHA antes de tocar nada.
+- Si el prompt trae `Base: origin/develop @ <sha>`, crea la rama desde ese SHA (`git switch -c <rama> <sha>`) y comprueba que `git rev-parse HEAD` es igual a `<sha>` antes de tocar nada. No lo sustituyas por un `origin/develop` más reciente: el dispatcher comprueba después que tu rama contiene ese commit.
+- Si no lo trae, parte de `origin/develop` actualizado (`git fetch origin develop`) y comprueba que `HEAD` coincide con ese SHA antes de tocar nada.
+- En ambos casos, si `HEAD` no coincide, no sigas: para y explícalo en el issue. No arranques desde el commit en el que esté el worktree (puede ser `master`).
 - Nombre de la rama: el `gitBranchName` que da Linear, tal cual. Si el issue no pasa a In Progress al empujar la rama, muévelo tú.
 
 ## 3. Implementación
