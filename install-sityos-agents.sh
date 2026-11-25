@@ -71,14 +71,38 @@ else
     '{"type":"stdio","command":"npx","args":["@digitalocean/mcp","--services","apps,databases"]}'
 fi
 
-# ── 3. Global CLAUDE.md (opt-in) ──────────────────────────────────────
+# ── 3. Commit attribution off (user settings) ─────────────────────────
+# Without this, Claude Code tells every session and subagent to append a
+# Co-Authored-By trailer, against the global rule in CLAUDE.md. A project can
+# still opt in with attribution.commit in its own .claude/settings.json.
+echo ""
+echo "✍️  Disabling commit attribution in ~/.claude/settings.json..."
+python3 - "$CLAUDE_DIR/settings.json" <<'PY'
+import json, os, sys
+path = sys.argv[1]
+data = {}
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+attribution = data.setdefault("attribution", {})
+if attribution.get("commit") == "":
+    print("   ↪︎ attribution.commit already empty")
+else:
+    attribution["commit"] = ""
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+        f.write("\n")
+    print("   ✅ attribution.commit = \"\"")
+PY
+
+# ── 4. Global CLAUDE.md (opt-in) ──────────────────────────────────────
 if $LINK_CLAUDE_MD; then
   echo ""
   echo "📄 Linking global CLAUDE.md..."
   link "$SCRIPT_DIR/global/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 fi
 
-# ── 4. Project override (opt-in) ──────────────────────────────────────
+# ── 5. Project override (opt-in) ──────────────────────────────────────
 if [[ -n "$PROJECT_PATH" ]]; then
   echo ""
   echo "📁 Installing project override in $PROJECT_PATH..."

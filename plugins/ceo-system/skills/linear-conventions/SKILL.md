@@ -36,7 +36,7 @@ Linear is the "what"; GitHub is the "how". No agent keeps its own state: if it i
 | Backlog → Proposed | CEO | Has acceptance criteria and fits an active milestone |
 | Proposed → Ready | **Owner** | Approves it |
 | Proposed → Backlog | CEO | Batch priority changed before approval |
-| Ready → In Progress | Dispatcher | WIP slot free and `role` label has an agent |
+| Ready → In Progress | Agent launched by `/ceo-system:dispatch` | WIP slot free and `role` label has an agent; the agent moves it when it creates the branch (the dispatcher never moves states) |
 | Ready → Blocked | Dev | A start condition fails |
 | In Progress → In Review | Dev (via GitHub) | Opens the PR |
 | In Review → In Progress | Tester | FAIL on a criterion |

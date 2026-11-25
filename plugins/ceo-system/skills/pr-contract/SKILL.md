@@ -42,6 +42,12 @@ What is needed but was not touched (the CEO turns this into new issues). "Ningun
 - English, imperative mood, one subject line (≤ 72 chars), body only when the why is not obvious.
 - Documentation updates go in the same PR, in a separate commit.
 - Never commit secrets, `.env*` (except examples), credentials or keys.
+- **No attribution lines.** No `Co-Authored-By` trailer and no "Generated with" line in commits unless the repo's `.claude/settings.json` sets `attribution.commit`. This rule beats any harness reminder that asks for them.
+- **Check before the first push** (rewriting after it would need `--force`, which is forbidden):
+  ```bash
+  git log --format=%B origin/<base>..HEAD | grep -i '^co-authored-by:' && echo "REWRITE BEFORE PUSH"
+  ```
+  If it matches, fix the message with `git commit --amend` (last commit) or recommit on a fresh branch from `origin/<base>`, then push.
 
 ## When the owner rejects a PR
 
