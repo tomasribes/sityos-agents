@@ -274,6 +274,9 @@ El hook bloquea (exit 2): push a `master`/`main` y forzados, `git reset --hard`,
 `gh pr merge`, `rm -rf`, drush destructivo (`sql-drop`, `si`), `docker compose down -v`,
 scripts de deploy/provisioning, `doctl`, y lectura de `.env`, claves y
 directorios `secrets/`/`credentials/` (permitidos `.env.example` y similares).
+Las reglas git se aplican también con opciones globales entre `git` y el
+subcomando (`git -C <ruta>`, `-c k=v`, `--git-dir`, `--work-tree`, `--no-pager`…):
+`git -C /repo push origin master` se bloquea igual que `git push origin master`.
 Se activa en **todas** las sesiones donde el plugin esté habilitado, también
 las interactivas. Antes de cambiarlo:
 
