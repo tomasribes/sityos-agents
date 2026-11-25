@@ -69,3 +69,21 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-42 → dev-plugin · In Review · PR #9
 - Descartados y motivo: DEV-43 · blockedBy DEV-42 (Ready) · DEV-44 · flag `needs-human` y blockedBy DEV-43
 - Lecciones: la integración de GitHub sigue sin mover los issues al empujar la rama ni al abrir el PR, así que el agente los mueve a mano. Es la cuarta vez seguida.
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: DEV-42. El PR #9 está mergeado y el merge commit b3ce5df está en master. El run 45698071034 de ci.yml (4431b76) terminó en success y contiene b3ce5df. El issue dice "No aplica: marketplace local", así que bastaba con eso. Como evidencia extra, release-tag.yml ya corrió en master (run 45698117697, success) y el tag ceo-system-v0.3.1 sigue existiendo, sin moverse.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: Ninguna.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-43 → dev-plugin · In Review · PR #10
+- Descartados y motivo: DEV-44 · flag `needs-human` (falta decidir dónde vive el log)
+- Lecciones: la integración de GitHub sigue sin mover los issues (quinta vez). El agente detectó dos sitios fuera de alcance que no quedaron coherentes con `agent-paused`: el paso 1 de `agents/ceo.md` y la sección Kill-switches de `linear-conventions`.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 1 (PRs abiertos 1/2 · en revisión 1/3)
+- Lanzados: ninguno
+- Descartados y motivo: DEV-44 · blockedBy DEV-43 (In Review, PR #10 sin fusionar). Ya no tiene `needs-human`.
+- Lecciones: Ninguna
