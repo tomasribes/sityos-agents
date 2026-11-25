@@ -69,3 +69,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-42 → dev-plugin · In Review · PR #9
 - Descartados y motivo: DEV-43 · blockedBy DEV-42 (Ready) · DEV-44 · flag `needs-human` y blockedBy DEV-43
 - Lecciones: la integración de GitHub sigue sin mover los issues al empujar la rama ni al abrir el PR, así que el agente los mueve a mano. Es la cuarta vez seguida.
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: DEV-42. El PR #9 está mergeado y el merge commit b3ce5df está en master. El run 45698071034 de ci.yml (4431b76) terminó en success y contiene b3ce5df. El issue dice "No aplica: marketplace local", así que bastaba con eso. Como evidencia extra, release-tag.yml ya corrió en master (run 45698117697, success) y el tag ceo-system-v0.3.1 sigue existiendo, sin moverse.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: Ninguna.
