@@ -122,13 +122,68 @@ plugins/ceo-system/
 
 ### Instalación
 
-```bash
-# Desarrollo local (lee el working tree, los cambios aplican al reiniciar sesión)
-claude plugin marketplace add ~/ai-projects/sityos-agents
-claude plugin install ceo-system@sityos-agents
+El plugin se habilita **por proyecto**, nunca en ámbito de usuario: su hook
+`PreToolUse` se ejecuta en todas las sesiones donde el plugin está habilitado.
 
-# Desde GitHub (otras máquinas, GitHub Actions)
-/plugin install ceo-system --marketplace tomasribes/sityos-agents
+#### Repo consumidor
+
+1. Declara el marketplace y habilita el plugin en el `.claude/settings.json`
+   del repo (se commitea):
+
+   ```json
+   {
+     "extraKnownMarketplaces": {
+       "sityos-agents": {
+         "source": {
+           "source": "github",
+           "repo": "tomasribes/sityos-agents"
+         }
+       }
+     },
+     "enabledPlugins": {
+       "ceo-system@sityos-agents": true
+     }
+   }
+   ```
+
+2. Una vez por clon, descarga el plugin en ámbito de proyecto (el
+   `settings.json` lo habilita, pero no lo instala):
+
+   ```bash
+   claude plugin install ceo-system@sityos-agents --scope project
+   ```
+
+El repo es privado: Claude Code clona el marketplace con las credenciales git
+que ya tenga la máquina (`gh auth login`, clave SSH sin passphrase) y nunca
+las pide.
+
+#### Desarrollo del plugin
+
+Desde la raíz de este checkout:
+
+```bash
+claude --plugin-dir ./plugins/ceo-system
+```
+
+Carga el plugin del working tree solo para esa sesión. No instala nada ni toca
+el perfil (`~/.claude`). Los cambios se ven al abrir una sesión nueva.
+
+#### GitHub Actions
+
+En CI no hay sesión interactiva, así que no valen los comandos de sesión: se
+usan los comandos de terminal, con el CLI de Claude ya instalado en el runner. Como el repo es
+privado, el token del step necesita acceso de lectura a
+`tomasribes/sityos-agents` (el `GITHUB_TOKEN` del workflow solo ve su propio
+repo; el nombre del secreto es un ejemplo).
+
+```yaml
+- name: Install ceo-system plugin
+  env:
+    GH_TOKEN: ${{ secrets.SITYOS_AGENTS_TOKEN }}
+  run: |
+    gh auth setup-git
+    claude plugin marketplace add tomasribes/sityos-agents
+    claude plugin install ceo-system@sityos-agents --scope project
 ```
 
 ### Requisitos por repo
