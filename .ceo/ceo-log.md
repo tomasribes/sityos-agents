@@ -45,3 +45,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: ninguno
 - Descartados y motivo: DEV-41 · estado Blocked, no Ready. El dueño ya respondió (opción 1, 19:37Z), pero no movió el issue a Ready.
 - Lecciones: responder en el issue no lo desbloquea. Hace falta mover el estado a Ready para que el dispatcher lo coja.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-41 → dev-plugin · In Review · PR #8
+- Descartados y motivo: ninguno
+- Lecciones: la integración de GitHub tampoco movió el issue al empujar la rama ni al abrir el PR; lo pasó a In Review el agente. Hay que revisar la automatización de Linear↔GitHub. Falta el issue de KR1.2 para automatizar el tag (opción 1 del dueño).
