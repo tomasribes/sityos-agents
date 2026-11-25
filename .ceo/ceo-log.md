@@ -51,3 +51,15 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-41 → dev-plugin · In Review · PR #8
 - Descartados y motivo: ninguno
 - Lecciones: la integración de GitHub tampoco movió el issue al empujar la rama ni al abrir el PR; lo pasó a In Review el agente. Hay que revisar la automatización de Linear↔GitHub. Falta el issue de KR1.2 para automatizar el tag (opción 1 del dueño).
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: DEV-39, DEV-40, DEV-41. Los tres PRs (#6, #7, #8) están mergeados en develop y sus merge commits (1be4850, 6eeb3db, 559e972) están en master (compare = ahead). El run 45691884445 de ci.yml en master (c8839b5, 2026-11-25T20:07:27Z) terminó en success, con todos los steps del job `gate` en verde. Los tres issues tienen `No aplica: marketplace local`, así que bastaba con el deploy confirmado. No hay `rollback_workflow` configurado.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno. El tag `ceo-system-v0.3.1` lo crea el dueño en master (lo dice el comentario de DEV-41 y la subsección `### Versiones` del README). Al ser manual, el verificador no lo comprueba.
+- Lecciones: `live.url` es el repo privado de GitHub y no se puede consultar con curl, pero con `No aplica` no hizo falta. `ci.yml` sale en verde sobre cualquier commit de master, así que el run valida el estado de master y no el cambio concreto de cada issue. Es una señal débil, aceptable para este repo local-tool. DEV-39 y DEV-40 siguen con los criterios de aceptación sin marcar en la descripción de Linear. No bloquea el cierre y lo marca quien implementa.
+
+### 2026-11-25T20:13Z · sityos-agents
+- Creados: DEV-42 (KR1.2, `release-tag.yml` con `workflow_run` de ci en master, comprueba que las tres versiones coincidan y nunca mueve un tag existente, Medium) · DEV-43 (KR2.1, comprueba `agent-paused` antes del verificador en ceo-run y live-verify, diagnóstico local si falta la config y deja de crear issues en TOM, Medium, blocked by DEV-42) · DEV-44 (KR2.1, quitar el commit y el push de ceo-log.md, High, `needs-human` para decidir dónde vive el log, blocked by DEV-43).
+- Descartados y motivo: el resultado estructurado de KR2.1, KR2.2, KR2.3 y KR3.1, por el límite de 3 issues y el orden O1 > O2 > O3. KR2.2 sigue bloqueado por KR2.1. El siguiente lote es KR2.3, que no comparte ficheros con KR2.1, y el resultado estructurado de KR2.1.
+- Preguntas abiertas: DEV-44, dónde vive el log: 1 fichero local fuera de Git (recomendado) · 2 comentarios en el project de Linear · 3 Git con un PR por ejecución.
+- Lecciones: las respuestas del dueño en los comentarios de issues ya Done (DEV-41, opción 1) son trabajo pendiente y hay que buscarlas. Los issues de este repo casi siempre tocan el README, así que quedan en serie con `blocked by`; para que puedan ir en paralelo hay que meter en el mismo lote un KR que toque otros ficheros (por ejemplo KR2.3). Este agente sigue sin Glob ni Grep: la existencia de ficheros se comprobó con Read.
