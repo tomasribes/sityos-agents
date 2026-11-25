@@ -156,6 +156,12 @@ ya existente, con rol `pm`/`tester`/`reviewer` o sin fichero de agente en
 `.claude/agents/`. No mueve estados: el agente pasa el issue a In Progress al
 crear la rama. Registra cada ejecución en `.ceo/ceo-log.md`.
 
+**ceo-log.md:** `ceo-run`, `live-verify` y `dispatch` añaden su entrada a
+`.ceo/ceo-log.md` y la commitean directamente en `branches.base` (`develop`), sin
+PR: commit de solo ese fichero, `pull --rebase --autostash` y push. Si el
+checkout no está en la rama base, o el rebase/push falla, el fichero queda sin
+commitear y el comando lo avisa.
+
 Para que un repo pueda despachar necesita su agente de desarrollo en
 `.claude/agents/<nombre>.md` (p. ej. `dev-python` en job-finder,
 `dev-typescript` en finanzas-mcp) y `.claude/worktrees/` en `.gitignore`.

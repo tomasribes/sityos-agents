@@ -16,7 +16,7 @@ Argumentos: `$ARGUMENTS`. Si trae identificadores (`DEV-19 DEV-20`), solo consid
 ## 2. Huecos libres
 - `prs_abiertos`: `gh pr list --base <branches.base> --state open --json number,headRefName,title` (cuenta todos).
 - `en_revision`: issues del proyecto en los estados `in_review` y `human` de `linear.states`.
-- `huecos = min(limits.max_open_prs − prs_abiertos, limits.max_awaiting_human − en_revision)`. Si `huecos ≤ 0`, informa `Sin huecos` con los números y termina (registra igualmente la entrada de log).
+- `huecos = min(limits.max_open_prs − prs_abiertos, limits.max_awaiting_human − en_revision)`. Si `huecos ≤ 0`, informa `Sin huecos` con los números y termina (registra y commitea igualmente la entrada de log).
 
 ## 3. Candidatos
 Issues del proyecto `linear.project`, team `linear.team`, en el estado `ready` de `linear.states` (filtrados por `$ARGUMENTS` si los hay). Un issue es candidato solo si cumple **todo**:
@@ -41,7 +41,7 @@ Ordena por prioridad (Urgent > High > Medium > Low > sin prioridad) y después p
 - Espera a que terminen todos. No implementes nada tú, aunque un agente falle.
 
 ## 5. Log e informe
-Añade al final de `.ceo/ceo-log.md` (créalo con el encabezado `# CEO log` si no existe) esta entrada. Es el único fichero que tocas. No hagas commit.
+Añade al final de `.ceo/ceo-log.md` (créalo con el encabezado `# CEO log` si no existe) esta entrada. Es el único fichero que tocas.
 
 ```
 ### <fecha UTC> · <project> · dispatch
@@ -50,6 +50,11 @@ Añade al final de `.ceo/ceo-log.md` (créalo con el encabezado `# CEO log` si n
 - Descartados y motivo: <ID> · <motivo> (o "ninguno")
 - Lecciones: <lo que haya fallado en el arranque o en el contrato del agente, o "Ninguna">
 ```
+
+**Commit del log** (directo a la rama base, sin PR). Lee `branches.base` de `.ceo/config.yml` (`develop` si no está). Si `.ceo/ceo-log.md` no tiene cambios, sáltalo. Si la rama actual (`git rev-parse --abbrev-ref HEAD`) no es la base, no hagas commit y añade al final de tu respuesta `ceo-log.md sin commitear: checkout en <rama>`. Si es la base:
+1. `git add .ceo/ceo-log.md && git commit -m "Update CEO log: dispatch <fecha UTC>" -- .ceo/ceo-log.md`. Solo ese fichero, aunque haya otros cambios o ficheros en stage. Sin trailers.
+2. `git pull --rebase --autostash origin <base>`. Si hay conflicto, `git rebase --abort`, no hagas push y avísame.
+3. `git push origin <base>`. Nunca push forzado ni a otra rama. Si falla, avísame con el error y no reintentes.
 
 Después muéstrame, en este orden:
 1. `## Dispatch`: la misma información que el log, en lista.

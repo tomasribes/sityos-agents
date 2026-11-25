@@ -12,7 +12,7 @@
       "name": "ceo-system",
       "source": "./plugins/ceo-system",
       "description": "CEO agent and execution team on top of Linear and GitHub: goals -> issues -> reviewable PRs",
-      "version": "0.3.0"
+      "version": "0.3.1"
     }
   ]
 }
