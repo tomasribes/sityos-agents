@@ -122,14 +122,110 @@ plugins/ceo-system/
 
 ### Instalación
 
-```bash
-# Desarrollo local (lee el working tree, los cambios aplican al reiniciar sesión)
-claude plugin marketplace add ~/ai-projects/sityos-agents
-claude plugin install ceo-system@sityos-agents
+El plugin se habilita **por proyecto**, nunca en ámbito de usuario: su hook
+`PreToolUse` se ejecuta en todas las sesiones donde el plugin está habilitado.
 
-# Desde GitHub (otras máquinas, GitHub Actions)
-/plugin install ceo-system --marketplace tomasribes/sityos-agents
+#### Repo consumidor
+
+1. Declara el marketplace y habilita el plugin en el `.claude/settings.json`
+   del repo (se commitea):
+
+   ```json
+   {
+     "extraKnownMarketplaces": {
+       "sityos-agents": {
+         "source": {
+           "source": "github",
+           "repo": "tomasribes/sityos-agents"
+         }
+       }
+     },
+     "enabledPlugins": {
+       "ceo-system@sityos-agents": true
+     }
+   }
+   ```
+
+2. Una vez por clon, descarga el plugin en ámbito de proyecto (el
+   `settings.json` lo habilita, pero no lo instala):
+
+   ```bash
+   claude plugin install ceo-system@sityos-agents --scope project
+   ```
+
+El repo es privado: Claude Code clona el marketplace con las credenciales git
+que ya tenga la máquina (`gh auth login`, clave SSH sin passphrase) y nunca
+las pide.
+
+#### Desarrollo del plugin
+
+Desde la raíz de este checkout:
+
+```bash
+claude --plugin-dir ./plugins/ceo-system
 ```
+
+Carga el plugin del working tree solo para esa sesión. No instala nada ni toca
+el perfil (`~/.claude`). Los cambios se ven al abrir una sesión nueva.
+
+#### GitHub Actions
+
+En CI no hay sesión interactiva, así que no valen los comandos de sesión: se
+usan los comandos de terminal, con el CLI de Claude ya instalado en el runner. Como el repo es
+privado, el token del step necesita acceso de lectura a
+`tomasribes/sityos-agents` (el `GITHUB_TOKEN` del workflow solo ve su propio
+repo; el nombre del secreto es un ejemplo).
+
+```yaml
+- name: Install ceo-system plugin
+  env:
+    GH_TOKEN: ${{ secrets.SITYOS_AGENTS_TOKEN }}
+  run: |
+    gh auth setup-git
+    claude plugin marketplace add tomasribes/sityos-agents
+    claude plugin install ceo-system@sityos-agents --scope project
+```
+
+### Versiones
+
+- **Ref de distribución:** el tag `ceo-system-vX.Y.Z` sobre `master`. El
+  primero es `ceo-system-v0.3.1`. Un repo consumidor que quiera fijar la
+  versión añade `ref` a la fuente del marketplace (`ref` admite una rama o un
+  tag):
+
+  ```json
+  "source": {
+    "source": "github",
+    "repo": "tomasribes/sityos-agents",
+    "ref": "ceo-system-v0.3.1"
+  }
+  ```
+
+- **Una sola versión:** el catálogo (`.claude-plugin/marketplace.json`,
+  `metadata.version` y `plugins[0].version`) y el plugin
+  (`plugins/ceo-system/.claude-plugin/plugin.json`, `version`) llevan siempre
+  la misma versión. Para comprobarlo:
+
+  ```bash
+  jq -r '.metadata.version, .plugins[0].version' .claude-plugin/marketplace.json
+  jq -r .version plugins/ceo-system/.claude-plugin/plugin.json
+  ```
+
+- **Quién crea el tag:** el dueño, a mano, tras el merge a `master` y con
+  `ci.yml` en verde sobre ese commit. Ningún agente crea ni empuja tags.
+
+**Qué versión carga Claude.** `claude plugin list` muestra cada plugin
+instalado con su versión, su ámbito y si está habilitado. Para ver solo
+`ceo-system`:
+
+```bash
+claude plugin list --json | jq '.[] | select(.id == "ceo-system@sityos-agents") | {version, scope, enabled}'
+```
+
+`version` es la versión instalada en caché, la que carga una sesión normal. Si
+no coincide con la del tag que esperas, el clon tiene una instalación antigua.
+Con `claude --plugin-dir ./plugins/ceo-system` se carga el working tree, no la
+caché.
 
 ### Requisitos por repo
 

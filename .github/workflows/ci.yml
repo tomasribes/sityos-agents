@@ -1,0 +1,48 @@
+# Marketplace gate. Runs the gate.commands of .ceo/config.yml, in order, plus shellcheck.
+# A green run on master is the "live" signal read by the ceo-system verifier (live.deploy_workflow).
+name: ci
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    # Pinned image: shellcheck and jq come preinstalled; avoids silent ubuntu-latest changes.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Claude Code CLI (pinned)
+        run: npm install -g @anthropic-ai/claude-code@2.1.332
+
+      - name: Tool versions
+        run: |
+          shellcheck --version
+          jq --version
+          claude --version
+
+      - name: Syntax check (bash -n)
+        run: bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh
+
+      - name: Hook tests
+        run: bash plugins/ceo-system/tests/deny-dangerous.test.sh
+
+      - name: Validate marketplace
+        run: claude plugin validate --strict .
+
+      - name: Validate plugin
+        run: claude plugin validate --strict ./plugins/ceo-system
+
+      - name: Shellcheck (errors only)
+        run: shellcheck -S error install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh
