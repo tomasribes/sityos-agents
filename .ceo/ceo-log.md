@@ -39,3 +39,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: ninguno
 - Descartados y motivo: DEV-41 · estado Blocked, no Ready (espera respuesta del dueño sobre el criterio del tag)
 - Lecciones: Ninguna
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: ninguno
+- Descartados y motivo: DEV-41 · estado Blocked, no Ready. El dueño ya respondió (opción 1, 19:37Z), pero no movió el issue a Ready.
+- Lecciones: responder en el issue no lo desbloquea. Hace falta mover el estado a Ready para que el dispatcher lo coja.
