@@ -258,11 +258,19 @@ ya existente, con rol `pm`/`tester`/`reviewer` o sin fichero de agente en
 `.claude/agents/`. No mueve estados: el agente pasa el issue a In Progress al
 crear la rama. Registra cada ejecución en `.ceo/ceo-log.md`.
 
-**ceo-log.md:** `ceo-run`, `live-verify` y `dispatch` añaden su entrada a
-`.ceo/ceo-log.md` y la commitean directamente en `branches.base` (`develop`), sin
-PR: commit de solo ese fichero, `pull --rebase --autostash` y push. Si el
-checkout no está en la rama base, o el rebase/push falla, el fichero queda sin
-commitear y el comando lo avisa.
+**ceo-log.md:** `ceo-run`, `live-verify` y `dispatch` nunca commitean ni
+pushean el log en `branches.base` (`develop`) ni tocan el checkout del dueño.
+Cada ejecución añade su entrada como commit nuevo en la rama `ceo-log`, desde
+un worktree persistente en `.claude/worktrees/ceo-log`, y la pushea sin forzar.
+Esa rama tiene un único PR acumulado contra `develop`: si no hay uno abierto, el
+comando lo crea; si lo hay, añade el commit a él. El dueño lo fusiona **con
+merge commit** cuando le convenga y la siguiente ejecución abre uno nuevo. Ese
+PR no cuenta en `max_open_prs`. El CEO lee el log del worktree `ceo-log` (que
+incluye las entradas sin fusionar) y, si no existe, `.ceo/ceo-log.md`. Si el
+worktree tiene cambios o commits sin publicar, o el push se rechaza (p. ej.
+tras fusionar con squash), el comando no reintenta y muestra la entrada con
+`ceo-log sin publicar: <motivo>`. No borres ese worktree al limpiar los de los
+agentes.
 
 Para que un repo pueda despachar necesita su agente de desarrollo en
 `.claude/agents/<nombre>.md` (p. ej. `dev-python` en job-finder,
