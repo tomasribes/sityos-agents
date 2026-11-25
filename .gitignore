@@ -5,10 +5,7 @@
 /.claude/
 CLAUDE.local.md
 
-# Ruflo / claude-flow runtime state
-.claude-flow/
-.swarm/
-.hive-mind/
+# Local runtime state
 .mcp.json
 *.db
 *.db-journal

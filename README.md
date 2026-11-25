@@ -8,7 +8,7 @@ Sistema de agentes y skills para el ecosistema **SITYOS AI / Sityos Automate**.
 sityos-agents/
 ├── install-sityos-agents.sh        ← Script de instalación
 ├── global/
-│   └── CLAUDE.md                   → ~/.claude/CLAUDE.md (solo con --link-claude-md)
+│   └── CLAUDE.md                   → ~/.claude/CLAUDE.md (symlink, --link-claude-md)
 ├── agents/                         (symlinks, se editan aquí y aplican al instante)
 │   ├── sityos-frontend/SKILL.md    → ~/.claude/skills/sityos-frontend
 │   ├── sityos-drupal/SKILL.md      → ~/.claude/skills/sityos-drupal
@@ -40,7 +40,7 @@ de `~/.claude/CLAUDE.md` una vez enlazado con `--link-claude-md`. Contiene:
 - Rol, contexto operativo y proyectos activos
 - Brand context de Sityos y tabla de skills `sityos-*`
 - Estándares de código, comportamiento y formato de respuesta
-- Sección Ruflo (la regenera `ruflo init`; al ser symlink, los cambios aparecen en el repo)
+- Convenciones de proyecto (`AGENTS.md` canónico), índice de `~/ai-projects` y sistema CEO
 
 ### Proyecto (`<proyecto>/CLAUDE.md`)
 Override que aplica **solo dentro de ese directorio**. Contiene:
@@ -80,7 +80,7 @@ Se activan solos según su `description`, o explícitamente:
 ## Git
 
 `.gitignore` excluye ficheros locales de Claude Code (`/.claude/`, `CLAUDE.local.md`),
-estado de Ruflo/claude-flow (`.claude-flow/`, `.swarm/`, `.hive-mind/`, `*.db`),
+estado local de runtime (`.mcp.json`, `*.db`),
 backups del script (`*.backup.*`), `.DS_Store` y secretos. `project-override/.claude/`
 sí se versiona (el patrón `/.claude/` solo aplica a la raíz).
 
