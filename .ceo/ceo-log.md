@@ -105,3 +105,10 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: el resultado estructurado de KR2.1 espera a DEV-44, porque su formato depende del flujo del log. KR2.2 sigue bloqueado por KR2.1. KR3.1 se aplaza por capacidad: con DEV-44, DEV-45 y DEV-46 ya hay unas 6 h. La incoherencia de `agent-paused` que dejó DEV-43 (`agents/ceo.md` paso 1 y Kill-switches de linear-conventions) es cosmética y no la he convertido en issue.
 - Preguntas abiertas: ninguna.
 - Lecciones: (1) Antes de diseñar un flujo con git, revisa cómo lo interpreta el hook. Las reglas del guardarraíl empiezan en `git[[:space:]]+<subcomando>` y no ven las opciones globales, y la batería de tests no tenía ningún caso con `-C`. (2) Cuando el dueño elige una opción que cambia los criterios y deja preguntas abiertas, el CEO decide cada punto en la descripción con su motivo y lo confirma en un comentario. Si no, el agente dev vuelve a bloquear el issue. (3) El CEO no tiene Bash, así que cualquier dato que tenga que leer (como el log sin fusionar) tiene que estar en una ruta de disco, no solo en una rama remota.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-45 → dev-plugin · In Review · PR #11
+- Lanzados: DEV-46 → dev-plugin · Blocked · sin PR
+- Descartados y motivo: DEV-44 · blockedBy DEV-45 (Ready, aún no está en Done ni en Pending live)
+- Lecciones: DEV-46 se bloqueó porque la documentación de subagentes no admite `Bash(prefijo:*)` en `tools`: el CEO dio por buena una sintaxis sin verificarla. DEV-45 dejó fuera algunas opciones globales de git (`--exec-path`, `--config-env`…). La integración de GitHub sigue sin mover los issues.
