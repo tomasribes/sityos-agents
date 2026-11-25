@@ -124,3 +124,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: el resultado estructurado de KR2.1 y el issue de KR2.2 esperan a DEV-44 (flujo del log y `dispatch.md`). La incoherencia de `agent-paused` en `agents/ceo.md` y en linear-conventions sigue siendo cosmética y no he creado issue.
 - Preguntas abiertas: ninguna.
 - Lecciones: (1) Una lista cerrada de excepciones en un guardarraíl de regex siempre deja huecos. Hay que preferir reglas que fallen cerradas ante lo que no se reconoce. (2) Antes de fijar una sintaxis de frontmatter en los criterios, hay que citar la documentación (DEV-46 se bloqueó por `Bash(prefijo:*)`). (3) Los issues del README pueden ir en paralelo si cada uno declara la sección exacta que toca. (4) Sin Glob ni Grep, la existencia de ficheros se sigue comprobando con Read.
+
+### 2026-11-25 · sityos-agents · live-verify
+- Done: DEV-45. El PR #11 se fusionó en develop con el commit 13c93cb. master lo contiene (compare = ahead). El run 45705601628 de ci.yml sobre master (383a9ec, job `gate` en success) lo incluye. La sección `## Verificación en producción` dice "No aplica: marketplace local", así que bastó con confirmar el deploy.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: ninguna. `live.url` es el repo privado de GitHub y no se puede consultar con curl. Todos los issues de este proyecto deben llevar "No aplica". Config sin `rollback_workflow`, así que no se comprobó ningún rollback.
