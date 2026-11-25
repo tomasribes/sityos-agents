@@ -20,3 +20,10 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: KR2.1, KR2.2, KR2.3 y KR3.1 aplazados por el tope de 3 issues por ejecución y el orden O1 > O2 > O3. KR2.1 va en el siguiente lote.
 - Preguntas abiertas: ninguna.
 - Lecciones: no existe el área `docs`, así que los issues de README llevan `infra`. El único rol con agente es `dev` (`dev-plugin`), por lo que la documentación también va con el rol `dev`. Los issues de este repo tocan zonas human_only casi siempre (`.github/**`, `.claude-plugin/**`): se marcan en la descripción y nunca con `needs-human`. Este agente no tiene Glob: la existencia de ficheros se comprobó con Read.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-39 → dev-plugin · In Review · PR #6
+- Lanzados: DEV-40 → dev-plugin · In Progress · PR #7
+- Descartados y motivo: DEV-41 · blockedBy DEV-39 y DEV-40 (no están en Done ni en Pending live)
+- Lecciones: la integración de GitHub no movió los issues a In Review al abrir el PR. DEV-39 lo movió el agente y DEV-40 sigue en In Progress con el PR abierto. El hook deny-dangerous bloqueó `gh pr create` porque el cuerpo del PR contenía la palabra «secrets» (falso positivo).
