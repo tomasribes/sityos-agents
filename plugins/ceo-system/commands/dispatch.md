@@ -14,9 +14,9 @@ Argumentos: `$ARGUMENTS`. Si trae identificadores (`DEV-19 DEV-20`), solo consid
 4. Si el proyecto de Linear tiene el **project label** `agent-paused`, responde `Proyecto en pausa (agent-paused)` y termina.
 
 ## 2. Huecos libres
-- `prs_abiertos`: `gh pr list --base <branches.base> --state open --json number,headRefName,title` (cuenta todos).
+- `prs_abiertos`: `gh pr list --base <branches.base> --state open --json number,headRefName,title`. Cuenta todos salvo los de `headRefName` igual a `ceo-log` (el PR acumulado del log, ver **Publicar el log**).
 - `en_revision`: issues del proyecto en los estados `in_review` y `human` de `linear.states`.
-- `huecos = min(limits.max_open_prs − prs_abiertos, limits.max_awaiting_human − en_revision)`. Si `huecos ≤ 0`, informa `Sin huecos` con los números y termina (registra y commitea igualmente la entrada de log).
+- `huecos = min(limits.max_open_prs − prs_abiertos, limits.max_awaiting_human − en_revision)`. Si `huecos ≤ 0`, informa `Sin huecos` con los números y termina (publica igualmente la entrada de log).
 
 ## 3. Candidatos
 Issues del proyecto `linear.project`, team `linear.team`, en el estado `ready` de `linear.states` (filtrados por `$ARGUMENTS` si los hay). Un issue es candidato solo si cumple **todo**:
@@ -41,7 +41,7 @@ Ordena por prioridad (Urgent > High > Medium > Low > sin prioridad) y después p
 - Espera a que terminen todos. No implementes nada tú, aunque un agente falle.
 
 ## 5. Log e informe
-Añade al final de `.ceo/ceo-log.md` (créalo con el encabezado `# CEO log` si no existe) esta entrada. Es el único fichero que tocas.
+Prepara esta entrada y publícala con el bloque **Publicar el log** (al final de este fichero).
 
 ```
 ### <fecha UTC> · <project> · dispatch
@@ -51,14 +51,25 @@ Añade al final de `.ceo/ceo-log.md` (créalo con el encabezado `# CEO log` si n
 - Lecciones: <lo que haya fallado en el arranque o en el contrato del agente, o "Ninguna">
 ```
 
-**Commit del log** (directo a la rama base, sin PR). Lee `branches.base` de `.ceo/config.yml` (`develop` si no está). Si `.ceo/ceo-log.md` no tiene cambios, sáltalo. Si la rama actual (`git rev-parse --abbrev-ref HEAD`) no es la base, no hagas commit y añade al final de tu respuesta `ceo-log.md sin commitear: checkout en <rama>`. Si es la base:
-1. `git add .ceo/ceo-log.md && git commit -m "Update CEO log: dispatch <fecha UTC>" -- .ceo/ceo-log.md`. Solo ese fichero, aunque haya otros cambios o ficheros en stage. Sin trailers.
-2. `git pull --rebase --autostash origin <base>`. Si hay conflicto, `git rebase --abort`, no hagas push y avísame.
-3. `git push origin <base>`. Nunca push forzado ni a otra rama. Si falla, avísame con el error y no reintentes.
-
 Después muéstrame, en este orden:
 1. `## Dispatch`: la misma información que el log, en lista.
 2. El bloque `## Resultado` de cada agente, tal cual lo devolvió.
-3. Los worktrees que hayan quedado con cambios (ruta), para que el dueño los limpie con `git worktree remove` cuando el PR esté fusionado.
+3. Los worktrees de agentes que hayan quedado con cambios (ruta; nunca `.claude/worktrees/ceo-log`), para que el dueño los limpie con `git worktree remove` cuando el PR esté fusionado.
 
 Si un agente falla o no devuelve su bloque `## Resultado`, indícalo en `Lanzados` como `ERROR: <motivo>` y dímelo.
+
+## Publicar el log
+
+La entrada nunca se escribe ni se commitea en el checkout principal ni en la rama base. Va como commit nuevo en la rama `ceo-log`, que tiene un único PR abierto contra la base y acumula las entradas hasta que el dueño lo fusiona con merge commit. `<base>` es `branches.base` de `.ceo/config.yml` (`develop` si no está). `WT` es `.claude/worktrees/ceo-log`, relativo a la raíz del repo. Ejecuta los comandos desde la raíz del repo, en este orden. Si un paso falla (salvo el segundo `git fetch` del paso 1), ve al paso 8.
+
+1. `git fetch origin <base>` y después `git fetch origin ceo-log`. El segundo falla si la rama remota no existe: no es un error.
+2. `gh pr list --head ceo-log --base <base> --state open --json number --jq length`. Si da `1` o más, hay PR abierto y el punto de partida es `origin/ceo-log`. Si da `0`, no hay PR y el punto de partida es `origin/<base>`.
+3. Prepara `WT`:
+   - Si no existe: `git worktree add -B ceo-log .claude/worktrees/ceo-log <punto de partida>`.
+   - Si existe y `git -C .claude/worktrees/ceo-log status --porcelain` no está vacío, o la rama tiene upstream y `git -C .claude/worktrees/ceo-log rev-list @{u}..HEAD` no está vacío (commits sin publicar): no toques nada y ve al paso 8 con el motivo `worktree ceo-log con cambios o commits sin publicar`.
+   - Si existe y está limpio: `git -C .claude/worktrees/ceo-log switch -C ceo-log <punto de partida>`.
+4. Añade la entrada al final de `.claude/worktrees/ceo-log/.ceo/ceo-log.md` (créalo con el encabezado `# CEO log` si no existe). Es el único fichero que tocas. Nunca escribas en `.ceo/ceo-log.md` del checkout principal.
+5. `git -C .claude/worktrees/ceo-log add .ceo/ceo-log.md` y `git -C .claude/worktrees/ceo-log commit -m "Update CEO log: dispatch <fecha UTC>" -- .ceo/ceo-log.md`. Solo ese fichero. Sin trailers.
+6. `git -C .claude/worktrees/ceo-log push -u origin ceo-log`. Nunca forzado y nunca a otra rama. Si se rechaza (por ejemplo, el PR anterior se fusionó con squash y la rama remota sigue ahí), ve al paso 8.
+7. Si en el paso 2 no había PR: `gh pr create --base <base> --head ceo-log --title "CEO log" --body "Entradas de .ceo/ceo-log.md escritas por ceo-run, dispatch y live-verify. Fusionar con merge commit."`.
+8. Si algo falla: no reintentes, no fuerces nada y no toques el checkout principal. Añade al final de tu respuesta `ceo-log sin publicar: <motivo>` y muestra la entrada completa para que no se pierda.
