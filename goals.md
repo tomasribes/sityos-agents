@@ -26,6 +26,7 @@ El CEO crea issues **solo** en estos milestones. El resto espera al siguiente pe
 - `KR1.1 — CI del marketplace` (primero: es la señal "live" del verificador)
 - `KR1.2 — Versión explícita`
 - `KR1.3 — Instalación por proyecto`
+- `KR1.5 — Compatibilidad con Codex`
 - `KR2.1 — Log fuera de la rama base`
 - `KR2.2 — Dispatch serial e idempotente`
 - `KR2.3 — Herramientas mínimas`
@@ -88,11 +89,13 @@ El CEO crea issues **solo** en estos milestones. El resto espera al siguiente pe
 | **KR1.1 — CI del marketplace** | `.github/workflows/ci.yml` en push y PR a `develop` y `master`: `bash -n`, test del hook, `claude plugin validate --strict` (marketplace y plugin), shellcheck sin errores · run verde en `master` | 2026-12-05 | GitHub Actions |
 | **KR1.2 — Versión explícita** | `marketplace.json` y `plugin.json` con la misma versión · tag `ceo-system-vX.Y.Z` en `master` · README documenta la ref de distribución y cómo ver qué versión carga Claude (`claude plugin list`) | 2026-12-12 | Tag · README |
 | **KR1.3 — Instalación por proyecto** | README con la instalación de consumidor: `extraKnownMarketplaces` + `enabledPlugins` en `.claude/settings.json`, `claude plugin install ceo-system@sityos-agents --scope project`, `claude --plugin-dir` para desarrollo · ejemplo de GitHub Actions con la forma de terminal (no `/plugin`) | 2026-12-12 | Review |
+| **KR1.5 — Compatibilidad con Codex** | `docs/compat/codex.md` documenta, por componente (4 comandos, 3 agentes, `dev-plugin`, 2 skills, hook), qué hace Codex CLI con ceo-system, con evidencia y estado `funciona` / `no funciona` / `sin verificar` · pruebas del dueño con `codex` que confirman el guardarraíl y el subagente del verificador · lista de issues para que ceo-system funcione en Codex o quede desactivado sin riesgo | 2026-12-31 | Documento · pruebas del dueño |
 | KR1.4 — Instalador con preflight *(siguiente periodo)* | Valida destino y colisiones antes de escribir · escritura atómica de `settings.json` · versiones `npx` fijadas · MCP operativos solo por proyecto · separa bootstrap de proyecto y preferencias personales | — | Prueba en entorno aislado |
 
 **Notas de alcance:**
 - **KR1.1:** el CLI de Claude se instala en el runner con versión fijada. Si `claude plugin validate` necesita autenticación, el issue lo comprueba primero y lo escala al dueño.
 - **KR1.2:** `.claude-plugin/**` es human_only: el PR lo revisa el dueño, y el tag lo crea el dueño tras el merge a `master`.
+- **KR1.5:** este periodo solo cubre el diagnóstico (un issue de ~2 h, `docs/**`). Los cambios que salgan de él (comandos, hooks, manifiestos, `global/AGENTS.md`) se planifican en el siguiente periodo o como issues sueltos aprobados por el dueño. Los agentes no ejecutan `codex` ni tocan `~/.codex/`; mientras tanto, ceo-system queda desactivado en Codex (acción del dueño). Issue semilla: DEV-52.
 
 ---
 
