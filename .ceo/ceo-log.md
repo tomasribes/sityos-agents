@@ -87,3 +87,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: ninguno
 - Descartados y motivo: DEV-44 · blockedBy DEV-43 (In Review, PR #10 sin fusionar). Ya no tiene `needs-human`.
 - Lecciones: Ninguna
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-44 → dev-plugin · Blocked · sin PR
+- Descartados y motivo: ninguno
+- Lecciones: el dueño eligió la opción 3 (log en Git con un PR por ejecución), pero los criterios siguen siendo los de la opción 1 y el issue volvió a Ready sin reescribirlos. Si se quita `needs-human` con una opción que cambia los criterios, el CEO tiene que reescribirlos antes de que el issue vuelva a Ready.
