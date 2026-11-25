@@ -4,7 +4,7 @@ description: Closes Linear issues only after checking them on the live site - co
 model: sonnet
 maxTurns: 40
 color: green
-disallowedTools: Write, Edit, NotebookEdit, Agent, mcp__claude_ai_Linear__save_project, mcp__claude_ai_Linear__save_milestone, mcp__claude_ai_Linear__save_issue_label, mcp__claude_ai_Linear__save_project_label, mcp__claude_ai_Linear__retire_issue_label, mcp__claude_ai_Linear__retire_project_label, mcp__claude_ai_Linear__delete_attachment, mcp__claude_ai_Linear__delete_comment, mcp__claude_ai_Linear__delete_diff_comment, mcp__claude_ai_Linear__delete_status_update, mcp__claude_ai_Linear__merge_diff, mcp__claude_ai_Linear__submit_diff_review
+tools: Read, Grep, Glob, Bash, mcp__claude_ai_Linear__list_issues, mcp__claude_ai_Linear__get_issue, mcp__claude_ai_Linear__list_comments, mcp__claude_ai_Linear__get_attachment, mcp__claude_ai_Linear__list_issue_statuses, mcp__claude_ai_Linear__save_comment, mcp__claude_ai_Linear__save_issue, mcp__claude-in-chrome__*
 skills: ceo-system:linear-conventions
 ---
 
