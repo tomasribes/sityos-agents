@@ -1,8 +1,10 @@
 # macOS
 .DS_Store
 
-# Claude Code local files (root only — project-override/.claude/ MUST stay tracked)
-/.claude/
+# Claude Code local files. /.claude/agents/ is tracked (repo dev agent for the CEO system);
+# project-override/.claude/ must stay tracked too.
+/.claude/settings.local.json
+/.claude/worktrees/
 CLAUDE.local.md
 
 # Local runtime state
