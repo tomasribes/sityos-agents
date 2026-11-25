@@ -1,0 +1,63 @@
+# Creates the annotated tag ceo-system-v<version> on master after a green ci run.
+# Kept out of ci.yml on purpose: ci.yml is the "live" signal of the ceo-system verifier
+# (live.deploy_workflow), so a tagging failure must not turn it red. This also confines
+# contents: write to this small workflow.
+#
+# workflow_run only runs the workflow file from the default branch: it does nothing until
+# this file is on master. Tags pushed with GITHUB_TOKEN do not trigger other workflows.
+name: release-tag
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [master]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-tag
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Create ceo-system tag if missing
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          plugin_version="$(jq -r '.version' plugins/ceo-system/.claude-plugin/plugin.json)"
+          catalog_version="$(jq -r '.metadata.version' .claude-plugin/marketplace.json)"
+          entry_version="$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)"
+
+          if [[ -z "$plugin_version" || "$plugin_version" == "null" ]]; then
+            echo "::error::plugins/ceo-system/.claude-plugin/plugin.json has no version"
+            exit 1
+          fi
+          if [[ "$plugin_version" != "$catalog_version" || "$plugin_version" != "$entry_version" ]]; then
+            echo "::error::Version mismatch: plugin.json=$plugin_version, marketplace metadata.version=$catalog_version, plugins[0].version=$entry_version. No tag created."
+            exit 1
+          fi
+
+          tag="ceo-system-v${plugin_version}"
+
+          if [[ -n "$(git ls-remote --tags origin "refs/tags/${tag}")" ]]; then
+            echo "::notice::Tag ${tag} already exists on origin; left unchanged."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "ceo-system ${plugin_version}" "$HEAD_SHA"
+          git push origin "refs/tags/${tag}"
+          echo "::notice::Created tag ${tag} on ${HEAD_SHA}."
