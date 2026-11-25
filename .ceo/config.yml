@@ -1,0 +1,96 @@
+# CEO-system contract for this repo. Read by ceo-system:ceo, the dispatcher and the gate.
+# Owner-maintained. Agents never edit this file (it is a human_only zone).
+#
+# This repo is the source of the ceo-system plugin itself: changes here alter how every
+# CEO-managed repo is planned, dispatched and guarded. Keep autonomy low.
+
+project: sityos-agents
+archetype: local-tool       # Claude Code marketplace (global CLAUDE.md, sityos-* skills, ceo-system) · no public site
+
+linear:
+  team: DEV                 # code and versioned config
+  owner_team: TOM           # owner decisions, missing-config issues
+  project: Sityos Agents    # P-DEV-6 · one project per repo · KRs are milestones
+  line: Infraestructura y tooling   # project label group "line" (Free plan: no Initiatives)
+  states:
+    backlog: Backlog
+    proposed: Proposed
+    ready: Ready
+    in_progress: In Progress
+    in_review: In Review
+    human: Human review
+    blocked: Blocked
+    live: Pending live       # merged to develop, waiting for master + green CI
+    done: Done               # only the verifier moves issues here
+
+live:
+  # Read by ceo-system:verifier. There is no public site: "live" means the merge commit
+  # reached master and the CI workflow passed on it. Issues write
+  # "## Verificación en producción · No aplica: marketplace local".
+  # ci.yml does not exist yet: KR1.1 creates it. Until then issues wait in Pending live.
+  url: https://github.com/tomasribes/sityos-agents   # private repo · not curl-able without auth
+  deploy_branch: master
+  deploy_workflow: ci.yml
+
+autonomy:
+  ceiling: L2               # archetype local-tool
+  default: L0               # bootstrap: everything L0 until gate 1 passes (started 2026-11-25)
+
+limits:
+  max_new_issues_per_run: 3          # ~5 h/week of owner review capacity
+  max_open_prs: 2
+  max_awaiting_human: 3              # In Review + Human review
+  max_pr_diff_lines: 400
+  max_open_issues_workspace: 200     # Linear Free plan cap on active issues, shared workspace
+  daily_token_budget: 1000000
+
+branches:
+  base: develop
+  protected: [master]       # owner-only merge; CI on master is the "deploy" signal
+
+gate:
+  required: true
+  # Runs from the repo root. Same steps the KR1.1 ci.yml must run. Cheap checks first.
+  commands:
+    - bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh
+    - bash plugins/ceo-system/tests/deny-dangerous.test.sh
+    - claude plugin validate --strict .
+    - claude plugin validate --strict ./plugins/ceo-system
+  # Not installed yet (brew install shellcheck). KR1.1 adds it to CI, then it moves to `commands`.
+  pending:
+    - shellcheck install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh
+  # Must never be run by agents: they change the owner's machine profile or installed plugins.
+  never_run:
+    - bash install-sityos-agents.sh
+    - claude plugin install
+    - claude plugin update
+    - claude plugin marketplace add
+    - claude plugin marketplace update
+    - claude mcp add
+
+zones:
+  human_only:
+    - "global/**"                            # symlinked to ~/.claude/CLAUDE.md: affects every session
+    - "plugins/ceo-system/hooks/**"          # guardrail for every session with the plugin enabled
+    - ".claude-plugin/**"                    # marketplace catalog and versions
+    - "plugins/*/.claude-plugin/**"          # plugin manifests and versions
+    - "install-sityos-agents.sh"             # writes to the owner's ~/.claude
+    - ".github/**"
+    - ".ceo/**"
+    - "goals.md"
+    - "**/.env*"
+    - "**/*secret*"
+  forbidden:
+    - "reports/**"                           # private, untracked reports
+    - ".claude/settings.local.json"
+    - ".claude/worktrees/**"
+  sandbox:
+    - "docs/**"
+
+agents:
+  # role label -> agent in .claude/agents/. Only roles that resolve to an existing file.
+  # Reviewer/docs agents do not exist in the plugin yet (audit §3): add them here when they do.
+  dev: dev-plugin
+
+notify:
+  digest_hour: "08:30"      # Europe/Madrid
