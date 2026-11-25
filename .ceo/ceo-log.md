@@ -75,3 +75,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Blocked y motivo: ninguno.
 - Pendientes: ninguno.
 - Lecciones: Ninguna.
+
+### 2026-11-25 · sityos-agents · dispatch
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3)
+- Lanzados: DEV-43 → dev-plugin · In Review · PR #10
+- Descartados y motivo: DEV-44 · flag `needs-human` (falta decidir dónde vive el log)
+- Lecciones: la integración de GitHub sigue sin mover los issues (quinta vez). El agente detectó dos sitios fuera de alcance que no quedaron coherentes con `agent-paused`: el paso 1 de `agents/ceo.md` y la sección Kill-switches de `linear-conventions`.
