@@ -272,6 +272,23 @@ tras fusionar con squash), el comando no reintenta y muestra la entrada con
 `ceo-log sin publicar: <motivo>`. No borres ese worktree al limpiar los de los
 agentes.
 
+Al publicar, el comando añade bajo cada encabezado `###` la línea `- Ejecución:`
+(ID de ejecución `<comando>-<UTC>`, versión instalada de `ceo-system` según
+`claude plugin list --json`, o `desconocida`, y repo según `gh repo view`) y
+cierra la entrada con una sola línea `- Errores:` (fallos de subagentes, bloques
+`## Log` ausentes, `ERROR:` de `Lanzados`, o `ninguno`). En `ceo-run` los
+bloques del verificador y del CEO comparten la misma línea `- Ejecución:`:
+
+```
+### 2026-11-26T09:15Z · sityos-agents · dispatch
+- Ejecución: dispatch-20261126T091500Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Huecos: 1 (PRs abiertos 1/2 · en revisión 1/3)
+- Lanzados: DEV-50 → dev-plugin · In Review · #21
+- Descartados y motivo: ninguno
+- Lecciones: Ninguna
+- Errores: ninguno
+```
+
 Para que un repo pueda despachar necesita su agente de desarrollo en
 `.claude/agents/<nombre>.md` (p. ej. `dev-python` en job-finder,
 `dev-typescript` en finanzas-mcp) y `.claude/worktrees/` en `.gitignore`.
