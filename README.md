@@ -258,6 +258,27 @@ ya existente, con rol `pm`/`tester`/`reviewer` o sin fichero de agente en
 `.claude/agents/`. No mueve estados: el agente pasa el issue a In Progress al
 crear la rama. Registra cada ejecución en `.ceo/ceo-log.md`.
 
+Solo corre un dispatch a la vez por clon. Tras los kill-switches crea el lock
+`ceo-dispatch.lock` con `mkdir` en `git rev-parse --git-common-dir` (compartido
+por el checkout principal y todos sus worktrees, sin versionar). Si ya existe, el
+segundo dispatch responde `Dispatch en curso (lock <ruta> desde <fecha>)` y sale
+sin tocar Linear, ramas, PRs ni el log. El lock se libera con `rmdir` como último
+paso de toda salida posterior (incluidas `Sin huecos` y un fallo de agente). No
+caduca: si queda huérfano, el mensaje trae el `rmdir` exacto para quitarlo a mano.
+Justo antes de lanzar cada agente, el dispatcher relee el issue: si ya no está en
+Ready, tiene un label `flag` o un `blockedBy` abierto, no lo toca y lo anota en
+`Descartados` como `cambió antes de lanzar (<estado o label>)`.
+Tras tomar el lock, el dispatcher hace `git fetch origin <base>` y fija una sola
+vez `BASE_SHA=$(git rev-parse origin/<base>)`; la línea `Huecos` del log lo
+muestra como `base <base>@<sha corto>`. Cada agente recibe en su prompt la línea
+`Base: origin/<base> @ <BASE_SHA>. Crea tu rama desde ese commit.` (el agente
+`dev-plugin` crea la rama con `git switch -c <rama> <sha>` y comprueba `HEAD`).
+Al terminar, por cada rama empujada ejecuta `git merge-base --is-ancestor
+<BASE_SHA> origin/<rama>`: si la rama no contiene la base (por ejemplo, el
+worktree arrancó en `master`), `Lanzados` la marca `ERROR: rama no contiene base
+<sha corto>` y el dispatcher no toca el issue ni el PR. La comprobación vale para
+cualquier agente, aunque no conozca la línea `Base:`.
+
 **ceo-log.md:** `ceo-run`, `live-verify` y `dispatch` nunca commitean ni
 pushean el log en `branches.base` (`develop`) ni tocan el checkout del dueño.
 Cada ejecución añade su entrada como commit nuevo en la rama `ceo-log`, desde
@@ -271,6 +292,23 @@ worktree tiene cambios o commits sin publicar, o el push se rechaza (p. ej.
 tras fusionar con squash), el comando no reintenta y muestra la entrada con
 `ceo-log sin publicar: <motivo>`. No borres ese worktree al limpiar los de los
 agentes.
+
+Al publicar, el comando añade bajo cada encabezado `###` la línea `- Ejecución:`
+(ID de ejecución `<comando>-<UTC>`, versión instalada de `ceo-system` según
+`claude plugin list --json`, o `desconocida`, y repo según `gh repo view`) y
+cierra la entrada con una sola línea `- Errores:` (fallos de subagentes, bloques
+`## Log` ausentes, `ERROR:` de `Lanzados`, o `ninguno`). En `ceo-run` los
+bloques del verificador y del CEO comparten la misma línea `- Ejecución:`:
+
+```
+### 2026-11-26T09:15Z · sityos-agents · dispatch
+- Ejecución: dispatch-20261126T091500Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Huecos: 1 (PRs abiertos 1/2 · en revisión 1/3)
+- Lanzados: DEV-50 → dev-plugin · In Review · #21
+- Descartados y motivo: ninguno
+- Lecciones: Ninguna
+- Errores: ninguno
+```
 
 Para que un repo pueda despachar necesita su agente de desarrollo en
 `.claude/agents/<nombre>.md` (p. ej. `dev-python` en job-finder,
