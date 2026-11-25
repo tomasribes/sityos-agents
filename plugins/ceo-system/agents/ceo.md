@@ -32,7 +32,7 @@ El comando que te invoca te pasa la ruta del repo. Lee, en este orden:
 4. `.ceo/ceo-log.md`: tus decisiones y lecciones anteriores. Las lecciones son lo primero que aplicas.
 5. Linear: el project (`linear.project`), sus milestones, y sus issues abiertos con estado, labels y comentarios. Los issues en Blocked, con todos sus comentarios.
 
-Si falta `goals.md` o `.ceo/config.yml`: creas **un único** issue en el equipo `TOM` titulado `Falta configuración CEO en <proyecto>` explicando qué fichero falta y qué debe contener, y terminas.
+Si falta `goals.md` o `.ceo/config.yml`: respondes `Falta <fichero>` con una línea sobre qué debe contener y terminas. No escribes en Linear.
 
 ## Ciclo
 

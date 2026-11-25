@@ -234,8 +234,10 @@ caché.
 ### Requisitos por repo
 
 Un repo participa en el sistema cuando tiene `goals.md` (escrito por el dueño)
-y `.ceo/config.yml`. Sin ellos, `/ceo-system:ceo-run` crea un único issue en
-`TOM` avisando de lo que falta y no hace nada más.
+y `.ceo/config.yml`. Si falta alguno, `/ceo-system:ceo-run` responde en local
+`Falta <fichero>` con una línea sobre qué debe contener y termina: no lanza
+subagentes, no crea issues en Linear (tampoco en `TOM`) y no escribe en
+`.ceo/ceo-log.md`.
 
 ### Ciclo de trabajo
 
@@ -284,6 +286,6 @@ claude plugin validate --strict .
 
 | Ámbito | Cómo |
 |---|---|
-| Proyecto | Project label `agent-paused` en Linear (CEO y dispatcher salen sin hacer nada) |
+| Proyecto | Project label `agent-paused` en Linear (`ceo-run`, `live-verify` y `dispatch` salen sin hacer nada; el verificador tampoco se lanza) |
 | Issue | Issue label `agent-paused` |
 | Repo | Fichero `.ceo/PAUSE` |
