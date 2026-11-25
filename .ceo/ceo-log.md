@@ -150,3 +150,9 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Lanzados: DEV-48 → dev-plugin · In Review · PR #15
 - Descartados y motivo: ninguno
 - Lecciones: (1) La integración de GitHub sigue sin mover los issues. Los dos agentes los movieron a mano a In Review. (2) El worktree aislado arrancó en 4b80721 (master) en lugar de origin/develop (89e4338). DEV-46 creó la rama desde origin/develop explícitamente; el contrato del agente debería exigirlo siempre. (3) Fuera de alcance para el dueño: `ceo.md` sigue con `disallowedTools`. El texto de KR2.3 en `goals.md` («sin Bash de escritura») ya no encaja con la opción 2 de DEV-46. `shellcheck` sigue en `gate.pending` de `.ceo/config.yml` aunque `ci.yml` ya lo ejecuta.
+
+### 2026-11-25 · Sityos Agents · live-verify
+- Done: DEV-48 (PR #15, merge 580b7c8) y DEV-46 (PR #14, merge cd081f2). Ambos mergeados a `develop`, y compare contra `master` da `ahead`. El run 45709619411 de ci.yml (d8c5020, 22:01:34Z, success) los contiene. Los runs anteriores dan `diverged`, así que ese es el primero válido. Los dos issues tienen "No aplica: marketplace local", y con el deploy confirmado basta. Comentario de verificación publicado en cada uno.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: Ninguna. `.ceo/config.yml` no define `rollback_workflow`, así que no se comprobó ningún rollback. El `live.url` es un repo privado y no se pudo hacer curl, pero no hizo falta porque ambos issues eran "No aplica".
