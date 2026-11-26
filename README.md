@@ -340,3 +340,10 @@ claude plugin validate --strict .
 | Proyecto | Project label `agent-paused` en Linear (`ceo-run`, `live-verify` y `dispatch` salen sin hacer nada; el verificador tampoco se lanza) |
 | Issue | Issue label `agent-paused` |
 | Repo | Fichero `.ceo/PAUSE` |
+
+### Codex CLI
+
+El plugin está pensado para Claude Code. En Codex no es seguro todavía: Codex usa
+una copia en caché desfasada, no tiene los agentes del plugin y no aplica el
+guardarraíl hasta que lo marcas como de confianza. Estado por componente, pruebas
+y cambios pendientes: [`docs/compat/codex.md`](docs/compat/codex.md).
