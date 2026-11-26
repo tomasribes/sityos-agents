@@ -231,3 +231,33 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
   2. Cuando todos los milestones activos están cerrados, el trabajo que queda son tareas del dueño (equipo TOM, en Backlog) y prevención de fallos que ya ocurrieron. El CEO debe avisar de que hay que activar los KRs del siguiente periodo.
   3. Esta ejecución tampoco tenía Glob ni Grep, así que comprobé la existencia de `docs/compat/codex.md` y de `.claude/agents/dev-plugin.md` con Read.
 - Errores: ninguno
+
+### 2026-11-26 00:47 UTC · sityos-agents · dispatch
+- Ejecución: dispatch-20261126T004731Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Huecos: 2 (PRs abiertos 0/2 · en revisión 0/3) · base develop@8d7f52a
+- Lanzados: DEV-53 → dev-plugin · In Progress · https://github.com/tomasribes/sityos-agents/pull/29
+- Descartados y motivo: ninguno
+- Lecciones: Ninguna. La integración GitHub aún no había pasado DEV-53 a In Review al cerrar el dispatch.
+- Errores: ninguno
+
+### 2026-11-26T00:51Z · sityos-agents · live-verify
+- Ejecución: ceo-run-20261126T005318Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Done: ninguno
+- Blocked y motivo: ninguno
+- Pendientes: ninguno (0 issues en `Pending live` del project Sityos Agents, team DEV)
+- Lecciones: Ninguna
+
+### 2026-11-26T00:52Z · sityos-agents
+- Ejecución: ceo-run-20261126T005318Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Creados: DEV-54 (KR2.2, Medium, Proposed, bloqueado por DEV-53). Añade al §5 de `.claude/agents/dev-plugin.md` un paso que, después de `gh pr create`, relee el issue y lo mueve a In Review si no lo está. Si el PR es draft, el issue se queda en In Progress.
+- Descartados y motivo:
+  - El falso positivo de «secrets» en el hook: es zona human_only y no es un fallo de seguridad, porque el hook falla cerrado.
+  - El texto de KR2.3 en goals.md, `disallowedTools` en ceo.md y shellcheck en `gate.pending`: son zonas human_only.
+  - Los cambios 2–8 del documento de Codex: son del siguiente periodo.
+  - No queda más trabajo dentro de los Active milestones.
+- Preguntas abiertas: TOM-31 sigue sin respuesta (ceo-system en Codex: 1 solo Claude Code este periodo · 2 portarlo · 3 retirarlo). Hay que activar los KR del siguiente periodo.
+- Lecciones:
+  1. Un fallo que se repite en los logs de dispatch es deuda que ya causó un fallo. Si encaja en un KR activo, se convierte en issue en vez de seguir anotándolo como lección. La integración de GitHub falló en todos los dispatch y la transición a In Review salió de forma desigual.
+  2. Un issue en In Progress con el PR abierto no cuenta en `en_revision`, así que el CEO debe buscar los PR abiertos para medir de verdad la cola de revisión del dueño.
+  3. Esta ejecución tampoco tenía Glob ni Grep. La existencia de ficheros se comprobó con Read.
+- Errores: ninguno
