@@ -8,6 +8,11 @@ claude --plugin-dir ./plugins/ceo-system
 
 Carga el working tree solo para esa sesión, sin instalar nada ni tocar `~/.claude`.
 
+Este repo también consume el plugin como cualquier otro: `.claude/settings.json` lo
+habilita por proyecto fijado al último tag publicado (`ceo-system-v0.4.0`), así que
+`/ceo-system:dispatch` y los demás comandos corren la versión publicada, nunca la
+del working tree. Al publicar un tag nuevo, sube `ref` en un PR a `develop`.
+
 ## Versión
 
 ```bash
