@@ -33,10 +33,13 @@ jobs:
           claude --version
 
       - name: Syntax check (bash -n)
-        run: bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh
+        run: bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh tools/sync-codex-agents.sh tools/tests/sync-codex-agents.test.sh
 
       - name: Hook tests
         run: bash plugins/ceo-system/tests/deny-dangerous.test.sh
+
+      - name: Codex mirror generator tests
+        run: bash tools/tests/sync-codex-agents.test.sh
 
       - name: Validate marketplace
         run: claude plugin validate --strict .
@@ -45,4 +48,4 @@ jobs:
         run: claude plugin validate --strict ./plugins/ceo-system
 
       - name: Shellcheck (errors only)
-        run: shellcheck -S error install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh
+        run: shellcheck -S error install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh tools/*.sh tools/tests/*.sh

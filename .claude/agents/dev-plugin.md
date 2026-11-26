@@ -34,14 +34,7 @@ No improvises: si falta una decisión, pregúntala en el issue y para.
 - Un cambio de comportamiento del plugin actualiza el README en un commit aparte del mismo PR.
 
 ## 4. Gate (obligatorio antes del PR)
-Ejecuta, en este orden, los `gate.commands` de `.ceo/config.yml`:
-```
-bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh
-bash plugins/ceo-system/tests/deny-dangerous.test.sh
-claude plugin validate --strict .
-claude plugin validate --strict ./plugins/ceo-system
-```
-Todo en verde. Si no lo consigues tras corregir, no abras el PR: comenta en el issue la salida del fallo y muévelo a Blocked.
+Ejecuta, en este orden, **todos** los `gate.commands` vigentes de `.ceo/config.yml` (léelos del fichero, no de memoria). Todo en verde. Si no lo consigues tras corregir, no abras el PR: comenta en el issue la salida del fallo y muévelo a Blocked.
 
 ## 5. Commits y PR
 - Commits en inglés, imperativo, asunto ≤ 72 caracteres. Documentación en un commit aparte. Sin `Co-Authored-By` (ver `pr-contract`).
@@ -55,7 +48,7 @@ Todo en verde. Si no lo consigues tras corregir, no abras el PR: comenta en el i
 ## Resultado
 - Issue: DEV-NN · estado final en Linear
 - Rama / PR: <url>
-- Gate: bash -n ✓ · hook tests ✓ · validate marketplace ✓ · validate plugin ✓
+- Gate: bash -n ✓ · hook tests ✓ · codex sync tests ✓ · validate marketplace ✓ · validate plugin ✓
 - Fuera de alcance detectado: ...
 - Bloqueos o preguntas: ...
 ```
