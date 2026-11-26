@@ -202,3 +202,11 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: ninguno
 - Lecciones: (1) Es el primer dispatch con lock y base fijada (0.3.1). El agente creó la rama desde BASE_SHA y `merge-base --is-ancestor` dio 0. (2) Al filtrar `~/.codex/config.toml`, el agente dejó salir a su transcript un token en claro. El filtro de `sed` falló. No llegó al repo, al PR ni a Linear. El contrato de `dev-plugin` debería prohibir volcar ficheros de configuración de fuera del repo.
 - Errores: ninguno
+
+### 2026-11-26 · Sityos Agents · live-verify
+- Ejecución: live-verify-20261126T002058Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Done: DEV-52. La comparación `bcf2b20...master` devolvió `ahead` (13 commits por delante, 0 por detrás). El run de ci.yml es el único en master posterior al merge cuyo headSha lo contiene. No hay `rollback_workflow` en la config.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: ninguna.
+- Errores: ninguno
