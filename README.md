@@ -105,15 +105,18 @@ plugins/ceo-system/
 ├── agents/
 │   ├── ceo.md                         → ceo-system:ceo       (planifica, sin escritura)
 │   ├── verifier.md                    → ceo-system:verifier  (cierra issues tras verificar en producción)
-│   └── pm.md                          → ceo-system:pm        (digest diario, solo lectura)
+│   ├── pm.md                          → ceo-system:pm        (digest diario, solo lectura)
+│   └── review-code.md                 → ceo-system:review-code (revisión independiente de un PR, solo lectura)
 ├── commands/
 │   ├── ceo-run.md                     → /ceo-system:ceo-run      (goals.md → issues en Proposed)
 │   ├── dispatch.md                    → /ceo-system:dispatch     (issues Ready → agentes → PRs)
 │   ├── live-verify.md                 → /ceo-system:live-verify  (Pending live → Done/Blocked)
-│   └── pm-digest.md                   → /ceo-system:pm-digest
+│   ├── pm-digest.md                   → /ceo-system:pm-digest
+│   └── review.md                      → /ceo-system:review       (PRs en In Review → revisor)
 ├── skills/
 │   ├── linear-conventions/SKILL.md    estados, labels, transiciones, contrato de issue
-│   └── pr-contract/SKILL.md           formato y límites de PR
+│   ├── pr-contract/SKILL.md           formato y límites de PR
+│   └── dev-protocol/SKILL.md          protocolo común de los agentes dev-* de los repos
 ├── hooks/
 │   ├── hooks.json                     PreToolUse sobre Bash y herramientas de ficheros
 │   └── deny-dangerous.sh              guardarraíl (falla cerrado)
@@ -270,6 +273,7 @@ subagentes, no crea issues en Linear (tampoco en `TOM`) y no escribe en
 /ceo-system:ceo-run    → issues en Proposed
 (dueño)                → Proposed → Ready
 /ceo-system:dispatch   → un agente por issue Ready, en su worktree → PR a develop
+/ceo-system:review     → revisión independiente por PR → Human review si no hay bloqueantes
 (dueño)                → revisa y fusiona → Pending live → develop → master
 /ceo-system:live-verify→ Done o Blocked
 ```
@@ -339,6 +343,19 @@ Para que un repo pueda despachar necesita su agente de desarrollo en
 `.claude/agents/<nombre>.md` (p. ej. `dev-python` en job-finder,
 `dev-typescript` en finanzas-mcp) y `.claude/worktrees/` en `.gitignore`.
 
+Desde 0.5.0 el agente de desarrollo del repo solo describe su stack (entorno,
+normas, condiciones de parada extra) y precarga `skills: ceo-system:dev-protocol`, que
+lleva el protocolo común: arranque, rama desde la base fijada, zonas, gate y
+`never_run` leídos de `.ceo/config.yml`, commits, PR y respuesta. Plantilla y criterio
+de qué es global y qué es local: [`docs/agents-battery.md`](docs/agents-battery.md).
+
+`/ceo-system:review [PR ...]` lanza `agents.reviewer` (p. ej. `ceo-system:review-code`)
+sobre los PRs abiertos cuyo issue está en In Review, como máximo 3 por ejecución y
+nunca dos veces sobre el mismo head. El revisor trabaja en solo lectura sobre un SHA
+fijado, verifica cada hallazgo contra ruta y línea, publica un comentario y mueve el
+issue a Human review si no hay bloqueantes. Nunca aprueba ni fusiona y no escribe en
+`ceo-log.md`.
+
 ### Guardarraíl
 
 El hook bloquea (exit 2): push a `master`/`main` y forzados, `git reset --hard`,
@@ -379,3 +396,7 @@ El plugin está pensado para Claude Code. En Codex no es seguro todavía: Codex 
 una copia en caché desfasada, no tiene los agentes del plugin y no aplica el
 guardarraíl hasta que lo marcas como de confianza. Estado por componente, pruebas
 y cambios pendientes: [`docs/compat/codex.md`](docs/compat/codex.md).
+
+Espejo de los agentes de un repo para Codex: `.codex/agents/*.toml` se genera desde
+`.claude/agents/*.md` con `tools/sync-codex-agents.sh <repo>` (`--check` falla si hay
+desfase). No se edita a mano.

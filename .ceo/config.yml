@@ -52,13 +52,14 @@ gate:
   required: true
   # Runs from the repo root. Same steps the KR1.1 ci.yml must run. Cheap checks first.
   commands:
-    - bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh
+    - bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh tools/sync-codex-agents.sh tools/tests/sync-codex-agents.test.sh
     - bash plugins/ceo-system/tests/deny-dangerous.test.sh
+    - bash tools/tests/sync-codex-agents.test.sh
     - claude plugin validate --strict .
     - claude plugin validate --strict ./plugins/ceo-system
   # Not installed yet (brew install shellcheck). KR1.1 adds it to CI, then it moves to `commands`.
   pending:
-    - shellcheck install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh
+    - shellcheck install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh tools/*.sh tools/tests/*.sh
   # Must never be run by agents: they change the owner's machine profile or installed plugins.
   never_run:
     - bash install-sityos-agents.sh
