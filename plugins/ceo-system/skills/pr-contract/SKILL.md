@@ -35,7 +35,7 @@ What is needed but was not touched (the CEO turns this into new issues). "Ningun
 - Diff > `limits.max_pr_diff_lines` (default 400) excluding generated files → open as **draft** and propose the split in the Linear issue.
 - No new dependency unless the issue explicitly asks for it. No runtime/core/major version changes.
 - Files outside the declared scope are a blocking finding by themselves.
-- Anything matching `zones.human_only` → the reviewer never approves; it goes to Human review with the `needs-human` label.
+- Anything matching `zones.human_only` → the reviewer never approves; it flags the files in its review and the owner checks them in Human review. It does not add `needs-human`, which means "blocked on an owner decision" (see `linear-conventions`).
 
 ## Commits
 
