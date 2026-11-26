@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "sityos-agents": {
+      "source": {
+        "source": "github",
+        "repo": "tomasribes/sityos-agents",
+        "ref": "ceo-system-v0.4.0"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ceo-system@sityos-agents": true
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}
