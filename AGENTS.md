@@ -24,6 +24,8 @@ del sistema CEO.
 | `.ceo/` | Contrato CEO del repo (`.ceo/config.yml`) y log; solo el dueño | Agentes y comandos de `ceo-system` |
 | `goals.md` | Objetivos y Key Results del periodo; solo el dueño | Agente CEO (`/ceo-system:ceo-run`) |
 | `docs/audits/` | Auditorías de arquitectura (origen de los KR) | Dueño y agente CEO |
+| `docs/agents-battery.md` | Qué agentes son globales y cuáles locales, roles TAIS y plantilla del developer reducido | Dueño y repos consumidores |
+| `tools/sync-codex-agents.sh` | Genera `.codex/agents/*.toml` desde `.claude/agents/*.md` de un repo (`--check` para CI) | Repos con espejo Codex |
 
 ## Comprobación
 
@@ -31,21 +33,23 @@ Desde la raíz, en este orden (`gate.commands` de `.ceo/config.yml`). Todo en ve
 antes de abrir un PR:
 
 ```bash
-bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh
+bash -n install-sityos-agents.sh plugins/ceo-system/hooks/deny-dangerous.sh plugins/ceo-system/tests/deny-dangerous.test.sh tools/sync-codex-agents.sh tools/tests/sync-codex-agents.test.sh
 bash plugins/ceo-system/tests/deny-dangerous.test.sh
+bash tools/tests/sync-codex-agents.test.sh
 claude plugin validate --strict .
 claude plugin validate --strict ./plugins/ceo-system
 ```
 
 1. Sintaxis de los scripts Bash.
 2. Casos permitidos y bloqueados del guardarraíl (exit 0 = todo verde).
-3. Manifiesto del marketplace.
-4. Manifiesto y componentes del plugin.
+3. Casos del generador del espejo Codex.
+4. Manifiesto del marketplace.
+5. Manifiesto y componentes del plugin.
 
-`ci.yml` repite los cuatro y añade:
+`ci.yml` repite los cinco y añade:
 
 ```bash
-shellcheck -S error install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh
+shellcheck -S error install-sityos-agents.sh plugins/ceo-system/hooks/*.sh plugins/ceo-system/tests/*.sh tools/*.sh tools/tests/*.sh
 ```
 
 ## Lo que no se ejecuta
