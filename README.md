@@ -157,6 +157,27 @@ El repo es privado: Claude Code clona el marketplace con las credenciales git
 que ya tenga la máquina (`gh auth login`, clave SSH sin passphrase) y nunca
 las pide.
 
+#### Migración desde el ámbito de usuario
+
+Si `claude plugin list --json` muestra `ceo-system` con `"scope": "user"` (o
+`~/.claude/settings.json` declara el marketplace como `directory` y lo habilita
+en `enabledPlugins`), el hook corre en **todas** las sesiones de la máquina y los
+repos cargan el working tree de este checkout, no un tag. Para pasar al modelo
+por proyecto, en este orden:
+
+1. Añade el `.claude/settings.json` anterior (con `ref` fijado, ver
+   [Versiones](#versiones)) a cada repo consumidor, con un PR a `develop` por repo.
+2. Ejecuta `claude plugin install ceo-system@sityos-agents --scope project` en
+   cada clon.
+3. Quita `ceo-system@sityos-agents` de `enabledPlugins` y el marketplace
+   `sityos-agents` de `extraKnownMarketplaces` en `~/.claude/settings.json`, y
+   desinstala la copia de usuario (`claude plugin uninstall
+   ceo-system@sityos-agents --scope user`).
+4. Comprueba que `claude plugin list --json` muestra `"projectEnabled": true`
+   dentro de cada repo y que el plugin no se carga fuera de ellos.
+
+Hasta el paso 3, el plugin sigue activo en todas las sesiones.
+
 #### Desarrollo del plugin
 
 Desde la raíz de este checkout:
@@ -189,7 +210,11 @@ repo; el nombre del secreto es un ejemplo).
 ### Versiones
 
 - **Ref de distribución:** el tag `ceo-system-vX.Y.Z` sobre `master`. El
-  primero es `ceo-system-v0.3.1`. Un repo consumidor que quiera fijar la
+  primero es `ceo-system-v0.3.1`; `ceo-system-v0.4.0` es el primero que
+  incluye el lock de dispatch, la base SHA fijada, la rama `ceo-log` y el
+  guardarraíl ampliado, y es el que deben fijar los consumidores. Un cambio de
+  comportamiento del plugin sube la versión en el mismo PR: si no, el tag no se
+  crea y la misma versión describe dos plugins distintos. Un repo consumidor que quiera fijar la
   versión añade `ref` a la fuente del marketplace (`ref` admite una rama o un
   tag):
 
@@ -197,7 +222,7 @@ repo; el nombre del secreto es un ejemplo).
   "source": {
     "source": "github",
     "repo": "tomasribes/sityos-agents",
-    "ref": "ceo-system-v0.3.1"
+    "ref": "ceo-system-v0.4.0"
   }
   ```
 
@@ -318,8 +343,15 @@ Para que un repo pueda despachar necesita su agente de desarrollo en
 
 El hook bloquea (exit 2): push a `master`/`main` y forzados, `git reset --hard`,
 `gh pr merge`, `rm -rf`, drush destructivo (`sql-drop`, `si`), `docker compose down -v`,
-scripts de deploy/provisioning, `doctl`, y lectura de `.env`, claves y
-directorios `secrets/`/`credentials/` (permitidos `.env.example` y similares).
+scripts de deploy/provisioning, `doctl`, los targets `make` que tocan producción
+o restauran una BD (`upload-backup`, `download-*-from-prod`, `cim-live`,
+`restore-db`), `gh workflow run` de workflows de deploy, release o rollback, y
+lectura de `.env`, claves, `ai-keys*` y los directorios `secrets/`,
+`credentials/`, `keys/`, `private-files/` y `backups/` (permitidos
+`.env.example` y similares). La palabra `keys` solo cuenta como directorio
+(`keys/`), para no bloquear `jq keys`.
+Las reglas de secretos se aplican al texto del comando: un mensaje de commit
+que nombra una de esas rutas también se bloquea. Pásalo con `git commit -F <fichero>`.
 Las reglas git se aplican también con opciones globales entre `git` y el
 subcomando (`git -C <ruta>`, `-c k=v`, `--git-dir`, `--work-tree`, `--no-pager`…):
 `git -C /repo push origin master` se bloquea igual que `git push origin master`.
