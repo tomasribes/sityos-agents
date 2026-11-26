@@ -194,3 +194,11 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Pendientes: ninguno.
 - Lecciones: Ninguna. Nota menor: `live.url` apunta a un repo privado que no se puede consultar con curl. Es coherente con que todos los issues usen `No aplica`.
 - Errores: ninguno
+
+### 2026-11-26 · sityos-agents · dispatch
+- Ejecución: dispatch-20261126T001509Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Huecos: 1 (PRs abiertos 1/2 · en revisión 0/3) · base develop@bc35dc8
+- Lanzados: DEV-52 → dev-plugin · In Review · PR #26
+- Descartados y motivo: ninguno
+- Lecciones: (1) Es el primer dispatch con lock y base fijada (0.3.1). El agente creó la rama desde BASE_SHA y `merge-base --is-ancestor` dio 0. (2) Al filtrar `~/.codex/config.toml`, el agente dejó salir a su transcript un token en claro. El filtro de `sed` falló. No llegó al repo, al PR ni a Linear. El contrato de `dev-plugin` debería prohibir volcar ficheros de configuración de fuera del repo.
+- Errores: ninguno
