@@ -202,3 +202,32 @@ Written by `/ceo-system:ceo-run` from the agent's `## Log` block. Versioned so `
 - Descartados y motivo: ninguno
 - Lecciones: (1) Es el primer dispatch con lock y base fijada (0.3.1). El agente creó la rama desde BASE_SHA y `merge-base --is-ancestor` dio 0. (2) Al filtrar `~/.codex/config.toml`, el agente dejó salir a su transcript un token en claro. El filtro de `sed` falló. No llegó al repo, al PR ni a Linear. El contrato de `dev-plugin` debería prohibir volcar ficheros de configuración de fuera del repo.
 - Errores: ninguno
+
+### 2026-11-26 · Sityos Agents · live-verify
+- Ejecución: live-verify-20261126T002058Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Done: DEV-52. La comparación `bcf2b20...master` devolvió `ahead` (13 commits por delante, 0 por detrás). El run de ci.yml es el único en master posterior al merge cuyo headSha lo contiene. No hay `rollback_workflow` en la config.
+- Blocked y motivo: ninguno.
+- Pendientes: ninguno.
+- Lecciones: ninguna.
+- Errores: ninguno
+
+### 2026-11-26 · sityos-agents · live-verify
+- Ejecución: ceo-run-20261126T002350Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Done: ninguno
+- Blocked y motivo: ninguno
+- Pendientes: ninguno (0 issues en Pending live del project Sityos Agents)
+- Lecciones: Ninguna
+
+### 2026-11-26T00:24Z · sityos-agents
+- Ejecución: ceo-run-20261126T002350Z · ceo-system 0.3.1 · tomasribes/sityos-agents
+- Creados:
+  - TOM-30 (KR1.5, Urgent, override de seguridad): rotar el token de DigitalOcean en claro de `~/.codex/config.toml` y pasarlo a `${VAR}`.
+  - DEV-53 (KR2.3, High, Proposed): añadir una regla en §3 de `.claude/agents/dev-plugin.md` que prohíba mostrar valores de ficheros de configuración de fuera de la ruta de trabajo. Solo se permiten la existencia del fichero, los nombres de sección y los nombres de clave. La regla va en el contrato del agente y no en el hook, porque el hook es human_only y su enfoque de lista cerrada ya dejó huecos. Tiene relación `related` con TOM-30 y DEV-52.
+  - TOM-31 (KR1.5, High, blocked by TOM-30): pruebas 1–6 de `docs/compat/codex.md`, `enabled = false` en Codex y la decisión del cambio 6.
+- Descartados y motivo: los cambios 2, 3, 4, 5, 7 y 8 de `docs/compat/codex.md`. goals.md los deja para el siguiente periodo o para que los apruebe el dueño, y el 2, el 4 y el 8 son human_only. Siguen sin issue el texto de KR2.3 en goals.md, `disallowedTools` en `ceo.md` y `shellcheck` en `gate.pending`, porque son human_only.
+- Preguntas abiertas: TOM-31, ceo-system en Codex: 1 solo Claude Code este periodo (recomendada) · 2 portarlo el siguiente periodo · 3 retirarlo.
+- Lecciones:
+  1. Los comentarios de los agentes y del verificador en issues Done pueden traer hallazgos de seguridad (DEV-52: el token en claro). Hay que leerlos antes de planificar, igual que las respuestas del dueño.
+  2. Cuando todos los milestones activos están cerrados, el trabajo que queda son tareas del dueño (equipo TOM, en Backlog) y prevención de fallos que ya ocurrieron. El CEO debe avisar de que hay que activar los KRs del siguiente periodo.
+  3. Esta ejecución tampoco tenía Glob ni Grep, así que comprobé la existencia de `docs/compat/codex.md` y de `.claude/agents/dev-plugin.md` con Read.
+- Errores: ninguno

@@ -14,9 +14,12 @@ command -v jq >/dev/null 2>&1 || deny "jq no está instalado; el guardarrail no 
 input=$(cat) || deny "no se pudo leer la entrada del hook"
 tool=$(printf '%s' "$input" | jq -r '.tool_name // ""' 2>/dev/null) || deny "entrada del hook no es JSON válido"
 
-# Secret files: real .env files, private keys, credential/secret stores.
+# Secret files: real .env files, private keys, credential/secret stores, and the
+# sensitive stores of consumer repos (AI-Automation: ai-keys.txt, private-files/, backups/
+# with production DB dumps). "keys" only counts as a directory (keys/): the bare word
+# appears in harmless commands such as `jq keys`.
 # Allowed: .env.example, .env.dist, .env.sample, .env.template.
-SECRET_RE='(^|[/[:space:]"'"'"'=])\.env(\.[A-Za-z0-9_-]+)?([[:space:]"'"'"';|&)]|$)|id_(rsa|ed25519|ecdsa)([^.]|$)|\.pem([[:space:]"'"'"']|$)|(^|[/[:space:]"'"'"'])(credentials|secrets|keys)(/|[[:space:]"'"'"']|$)|\.keystore([[:space:]"'"'"']|$)|keystore\.(json|jks)'
+SECRET_RE='(^|[/[:space:]"'"'"'=])\.env(\.[A-Za-z0-9_-]+)?([[:space:]"'"'"';|&)]|$)|id_(rsa|ed25519|ecdsa)([^.]|$)|\.pem([[:space:]"'"'"']|$)|(^|[/[:space:]"'"'"'=])(credentials|secrets|private-files|backups)(/|[[:space:]"'"'"']|$)|(^|[/[:space:]"'"'"'=])keys/|(^|[/[:space:]"'"'"'=])ai-keys[A-Za-z0-9._-]*|\.keystore([[:space:]"'"'"']|$)|keystore\.(json|jks)'
 SECRET_OK_RE='\.env\.(example|dist|sample|template)'
 
 # Git global options that may sit between "git" and the subcommand
@@ -71,6 +74,10 @@ case "$tool" in
     # Production / infrastructure.
     m '(scripts/)?(deploy|provision-droplet|rollback)\.sh' && deny "script de despliegue o infraestructura de producción"
     m '(^|[;&|[:space:]])doctl[[:space:]]' && deny "doctl (infraestructura DigitalOcean)"
+    # Make targets that reach production or overwrite a database (AI-Automation Makefile).
+    m '(^|[;&|[:space:]])make[[:space:]][^|;&]*(upload-backup|download-[a-z-]*from-prod|cim-live|restore-db)([[:space:]]|$)' && deny "target make que toca producción o restaura una BD"
+    # Manually triggered deploy/release/rollback workflows.
+    m 'gh[[:space:]]+workflow[[:space:]]+run[^|;&]*(build-release|release|rollback|deploy)' && deny "lanzar un workflow de despliegue, release o rollback"
 
     # Secrets read or exfiltrated through the shell.
     # Strip allowed example files first so "cat .env.example; cat .env" is still caught.
