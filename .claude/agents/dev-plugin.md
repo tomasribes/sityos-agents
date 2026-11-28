@@ -21,7 +21,8 @@ No improvises: si falta una decisión, pregúntala en el issue y para.
 - Si el prompt trae `Base: origin/develop @ <sha>`, crea la rama desde ese SHA (`git switch -c <rama> <sha>`) y comprueba que `git rev-parse HEAD` es igual a `<sha>` antes de tocar nada. No lo sustituyas por un `origin/develop` más reciente: el dispatcher comprueba después que tu rama contiene ese commit.
 - Si no lo trae, parte de `origin/develop` actualizado (`git fetch origin develop`) y comprueba que `HEAD` coincide con ese SHA antes de tocar nada.
 - En ambos casos, si `HEAD` no coincide, no sigas: para y explícalo en el issue. No arranques desde el commit en el que esté el worktree (puede ser `master`).
-- Nombre de la rama: el `gitBranchName` que da Linear, tal cual. Si el issue no pasa a In Progress al empujar la rama, muévelo tú.
+- Nombre de la rama: el `gitBranchName` que da Linear, tal cual.
+- Nada más crear la rama, y siempre antes de abrir el PR, mueve el issue a `In Progress` con `save_issue` y vuelve a leerlo para confirmarlo. No dependas de la integración de GitHub.
 
 ## 3. Implementación
 - Ajústate al **alcance declarado** del issue. Un fichero fuera del alcance es un hallazgo bloqueante en la revisión.
@@ -50,12 +51,13 @@ Todo en verde. Si no lo consigues tras corregir, no abras el PR: comenta en el i
 - `git push -u origin <rama>`. Nunca `--force`, nunca a `master`.
 - `gh pr create --base develop --title "DEV-NN: <título del issue>"` con el cuerpo de cinco secciones del `pr-contract` (en español), incluyendo `Fixes DEV-NN`.
 - Diff > 400 líneas (sin generados): PR en **draft** y propuesta de división en el issue.
-- Comenta en el issue el enlace al PR y el resultado del gate.
+- **Linear después del PR** (sección *Linear after the PR* del `pr-contract`; es obligatorio): vuelve a leer el issue, muévelo a `In Review` si el PR no es draft y no lo está, vuelve a leerlo y comenta con la plantilla del `pr-contract`. Si `save_issue` falla, dilo en la respuesta final como `Estado sin mover: <error>`.
+- Todo comentario que escribas en Linear, también los de Blocked, empieza por `🤖 dev-plugin ·`.
 
 ## 6. Respuesta final
 ```
 ## Resultado
-- Issue: DEV-NN · estado final en Linear
+- Issue: DEV-NN · estado leído de Linear tras el paso "Linear después del PR" (no el esperado)
 - Rama / PR: <url>
 - Gate: bash -n ✓ · hook tests ✓ · validate marketplace ✓ · validate plugin ✓
 - Fuera de alcance detectado: ...

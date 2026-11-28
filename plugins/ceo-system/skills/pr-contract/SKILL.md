@@ -49,6 +49,25 @@ What is needed but was not touched (the CEO turns this into new issues). "Ningun
   ```
   If it matches, fix the message with `git commit --amend` (last commit) or recommit on a fresh branch from `origin/<base>`, then push.
 
+## Linear after the PR
+
+Opening the PR is not the last step. Right after `gh pr create`:
+
+1. Re-read the issue with `get_issue`.
+2. Non-draft PR and the issue is not in `in_review` (`linear.states`): move it there with `save_issue`, then re-read it. Draft PR: it stays in `in_progress`.
+3. Comment on the issue (in Spanish), starting with `🤖 <agent name> ·` (see `linear-conventions` → *Agent comments*):
+   ```markdown
+   🤖 dev-frontend · PR abierto
+
+   - PR: <url> (base `develop`, <n> líneas, <draft o no>)
+   - Gate: ci ✓ · check ✓ · build ✓ · audit ✓
+   - Criterios de aceptación: ✓ <criterio> · ✗ <criterio> (<motivo>)
+   - Pendiente del dueño: <lo que el dueño debe ejecutar o decidir antes de fusionar, o "nada">
+   ```
+4. The final answer reports the state read in step 2, never the one the agent expects.
+
+If `save_issue` fails, say so in the final answer as `Estado sin mover: <error>`; never leave it silent.
+
 ## When the owner rejects a PR
 
 The reason is written in the **Linear issue**, not only in GitHub. It is the only place the CEO reads to avoid repeating the mistake.
