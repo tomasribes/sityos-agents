@@ -38,7 +38,7 @@ Linear is the "what"; GitHub is the "how". No agent keeps its own state: if it i
 | Proposed → Backlog | CEO | Batch priority changed before approval |
 | Ready → In Progress | Agent launched by `/ceo-system:dispatch` | WIP slot free and `role` label has an agent; the agent moves it when it creates the branch (the dispatcher never moves states) |
 | Ready → Blocked | Dev | A start condition fails |
-| In Progress → In Review | Dev (via GitHub) | Opens the PR |
+| In Progress → In Review | Dev | Opens a non-draft PR. A Linear Git automation may do it; the dev re-reads the issue and moves it if it did not (see `pr-contract` → *Linear after the PR*). A draft PR stays In Progress |
 | In Review → In Progress | Tester | FAIL on a criterion |
 | In Review → Blocked | Tester | A criterion is not verifiable as written |
 | In Review → Human review | Reviewer | No blocking findings |
@@ -49,6 +49,12 @@ Linear is the "what"; GitHub is the "how". No agent keeps its own state: if it i
 | Blocked → Proposed | CEO | Rewrites or splits it |
 
 Never move an issue along a transition you do not own. **Nobody but the verifier moves an issue to Done**: merged is not finished, live is.
+
+After every state change, re-read the issue (`get_issue`) and report the state Linear returns, not the one you expect.
+
+## Agent comments
+
+The Linear connector writes with the owner's account, so an agent comment looks like the owner wrote it and triggers no notification. Every comment an agent writes starts with `🤖 <agent name> ·` (for example `🤖 dev-frontend · PR abierto`), so the owner can tell it apart and filter it.
 
 ## Definition of done: verified live
 
@@ -112,7 +118,7 @@ Candidate files, commands to run, risks, what was tried before.
 
 ## Branch and PR naming
 
-- Branch: the name Linear generates for the issue (`<user>/dev-123-slug`). The GitHub integration moves the issue to In Progress on branch creation and to In Review on PR open.
+- Branch: the name Linear generates for the issue (`<user>/dev-123-slug`). The Linear GitHub integration *may* move the issue to In Progress on branch creation and to In Review on PR open, depending on each team's Git automations. **Agents never rely on it**: the dev moves the issue to In Progress when it creates the branch (before opening the PR) and checks In Review after opening it.
 - PR title starts with the identifier: `DEV-123: ...`. PR body contains `Fixes DEV-123`.
 - PR base is `branches.base` from `.ceo/config.yml` (normally `develop`). **Never** `master`/`main`.
 
